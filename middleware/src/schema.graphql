@@ -161,6 +161,16 @@ input UpdateProductPriceInput {
   "The price is the current shelf price of the product."
   price: Float!
 }
+"""
+This is the USER profile
+"""
+type USER {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  mobileNumber: String!
+}
 
 """
 This is the main list of all mutations.
