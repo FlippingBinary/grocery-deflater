@@ -1,0 +1,171 @@
+"""
+A date/time object
+"""
+scalar Date
+
+"""
+Product is a unique instance of a product that appears at a single store. Internally, it has a hidden
+association between it and other products of the same type.
+"""
+type Product {
+  "A unique identifier for the product."
+  id: ID!
+  "The name of the product."
+  name: String!
+  "The filename of a product picture."
+  picture: String!
+  "The price of the product at a specific merchant."
+  price: Float!
+  "The weight of the product."
+  weight: Float!
+  "The identifier of the category of this product."
+  categoryId: String!
+  "A reference to the category of this product."
+  category: Category
+  "The identifier of the merchant selling this product."
+  merchantId: String!
+  "The merchant who sells the product at the given price and weight."
+  merchant: Merchant
+  "List of merchants who sell this product."
+  merchants(filterBy: MerchantInput): [Merchant]
+}
+
+"""
+A Category is a way of grouping types of products.
+"""
+type Category {
+  "A unique identifier for the product."
+  id: ID!
+  "The name of the product."
+  name: String!
+  "The filename of a product picture."
+  description: String!
+  "List of merchants who sell this product."
+  products(filterBy: ProductInput): [Product]
+}
+
+"""
+The location of a merchant.
+"""
+type Location {
+  "Street address of the merchant's location."
+  address: String!
+  "City of the merchant's location."
+  city: String!
+  "State of the merchant's location."
+  state: String!
+  "Zip code of the merchant's location"
+  zip: String!
+  "Latitude of the merchant's location"
+  latitude: Float
+  "Longitude of the merchant's location"
+  longitude: Float
+}
+
+"""
+A Merchant defines the name, location, and product catalog of a specific store.
+"""
+type Merchant {
+  "A unique identifier for the merchant."
+  id: ID!
+  "The name of the merchant."
+  name: String
+  "The location of the merchant."
+  location: Location
+  "A list of products carried by merchant."
+  products(filterBy: ProductInput): [Product]
+}
+
+"""
+This object allows multiple ways of selecting a location.
+"""
+input StringInput {
+  "The string must begin with the provided string."
+  startsWith: String
+  "The string must end with the provided string."
+  endsWith: String
+  "The string must exactly match the provided string."
+  matches: String
+}
+
+"""
+Search for products by any of these properties.
+"""
+input ProductInput {
+  "Match a product by its unique id."
+  id: ID
+  "Match a product by its name."
+  name: StringInput
+  "Match a product by its category name."
+  category: StringInput
+  "Match a product by its category id."
+  categoryId: Int
+}
+
+"""
+Search for categories by any of these properties.
+"""
+input CategoryInput {
+  "Match a category by its unique id."
+  id: ID
+  "Match a category by its name."
+  name: StringInput
+  "Match a category by its description."
+  description: StringInput
+}
+
+"""
+Search for a location by any of these properties.
+"""
+input LocationInput {
+  "Match a location by its address."
+  address: StringInput
+  "Match a location by its city."
+  city: StringInput
+  "Match a location by its state."
+  state: StringInput
+  "Match a location by its zip."
+  zip: StringInput
+}
+
+"""
+Search for merchants by any of these properties.
+"""
+input MerchantInput {
+  "Match a merchant by its unique id."
+  id: ID
+  "Match a merchant by its name."
+  name: StringInput
+  "Match a merchant by its location."
+  location: LocationInput
+}
+
+"""
+This is the main list of all queries.
+"""
+type Query {
+  "Search for products. Use `filterBy` to narrow the results."
+  products(filterBy: ProductInput): [Product]
+  "Search for product categories. Use `filterBy` to narrow the results."
+  categories(filterBy: CategoryInput): [Category]
+  "Search for merchants. Use `filterBy` to narrow the results."
+  merchants(filterBy: MerchantInput): [Merchant]
+}
+
+"""
+Provide these fields to update a product's price.
+"""
+input UpdateProductPriceInput {
+  "The productId corresponds to a unique product."
+  productId: ID!
+  "The price is the current shelf price of the product."
+  price: Float!
+}
+
+"""
+This is the main list of all mutations.
+"""
+type Mutation {
+  "This will update the price of a product at a merchant."
+  updateProductPrice(input: UpdateProductPriceInput!): Product
+}

@@ -4,6 +4,11 @@ provider:
   runtime: nodejs16.x
   httpApi:
     cors: true
+  environment:
+    SQL_HOST: ${ssm:/dev/grover/sql_host}
+    SQL_USER: ${ssm:/dev/grover/sql_user}
+    SQL_PASS: ${ssm:/dev/grover/sql_pass}
+    SQL_DB: ${ssm:/dev/grover/sql_db}
 functions:
   graphql:
     # Make sure your file path is correct!
@@ -20,3 +25,6 @@ functions:
 # Omit the following lines if you aren't using TS!
 plugins:
   - serverless-plugin-typescript
+package:
+  patterns:
+  - src/*.graphql

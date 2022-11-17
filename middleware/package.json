@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "This directory is for files associated with the middleware between the frontend and the backend. The middleware will be implemented in the form of a GraphQL Schema.",
   "scripts": {
-    "test": "serverless invoke local -f graphql -p test/query.json"
+    "test": "serverless invoke local -f graphql -p test/query.json",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "deploy": "serverless deploy"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,15 @@
   "dependencies": {
     "@apollo/server": "^4.0.3",
     "@as-integrations/aws-lambda": "^1.0.1",
-    "graphql": "^16.6.0"
+    "graphql": "^16.6.0",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.25.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.13.7",
+    "@graphql-codegen/introspection": "2.2.1",
+    "@graphql-codegen/typescript": "2.8.0",
+    "@graphql-codegen/typescript-resolvers": "2.7.5",
     "serverless-plugin-typescript": "^2.1.4",
     "typescript": "^4.8.4"
   }
