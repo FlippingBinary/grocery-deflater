@@ -150,6 +150,8 @@ type Query {
   categories(filterBy: CategoryInput): [Category]
   "Search for merchants. Use `filterBy` to narrow the results."
   merchants(filterBy: MerchantInput): [Merchant]
+  "Search for users. Use 'filterby' to return user."
+  user(email:String!): User
 }
 
 """
@@ -164,12 +166,19 @@ input UpdateProductPriceInput {
 """
 This is the USER profile
 """
-type USER {
+type User {
   id: ID!
   name: String!
   email: String!
   password: String!
   mobileNumber: String!
+}
+input CreateUserProfile {
+  userName: String!
+  userEmail: String!
+  userPassword: String!
+  userMobile: String!
+
 }
 
 """
@@ -178,4 +187,5 @@ This is the main list of all mutations.
 type Mutation {
   "This will update the price of a product at a merchant."
   updateProductPrice(input: UpdateProductPriceInput!): Product
+  createUserProfile(input: CreateUserProfile!): User
 }
