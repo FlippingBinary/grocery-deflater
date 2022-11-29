@@ -175,7 +175,7 @@ type Query {
   "Search for merchants. Use `filterBy` to narrow the results."
   merchants(filterBy: MerchantInput): [Merchant]
   "Search for users. Use 'filterby' to return user."
-  user(email:String!): User
+  user(email: String!): User
   "Search for product lists. Use `filterBy` to narrow the results."
   list(filterBy: ListInput): List
 }
@@ -189,6 +189,7 @@ input UpdateProductPriceInput {
   "The price is the current shelf price of the product."
   price: Float!
 }
+
 """
 This is the USER profile
 """
@@ -199,12 +200,15 @@ type User {
   password: String!
   mobileNumber: String!
 }
+
+"""
+Provide these fields to create a new user profile.
+"""
 input CreateUserProfile {
   userName: String!
   userEmail: String!
   userPassword: String!
   userMobile: String!
-
 }
 
 """
