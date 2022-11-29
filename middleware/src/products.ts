@@ -1,8 +1,7 @@
 import { GraphQLError } from "graphql";
-import { FindOptions, InferAttributes, Op, WhereOptions } from "sequelize";
+import { FindOptions, Op, WhereOptions } from "sequelize";
 import {
   CategoryModel,
-  LocationModel,
   ProductListItemModel,
   ProductListModel,
   ProductModel,
