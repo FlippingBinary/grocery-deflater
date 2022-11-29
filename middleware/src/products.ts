@@ -235,7 +235,6 @@ export async function updateProductPriceMutation(
     include: [
       {
         model: ProductModel,
-        attributes: ['name'],
         as: 'product',
       },
     ],
