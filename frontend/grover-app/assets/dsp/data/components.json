@@ -4,24 +4,272 @@
   "last_updated": "2022-10-26T02:22:54.621Z",
   "entities": [
     {
-      "id": "6cd361cc-3b4f-471c-ac53-3724cc031d98",
+      "id": "bf626574-deff-4e98-948d-3f3df548c931",
       "class": "component",
       "type": "page",
       "related_entity_ids": [],
       "snippets": {
-        "trigger": "compare",
+        "trigger": "bottom-menu-home-icon",
         "languages": {
-          "javascriptreact": "<Button\n  onPress={onPressComparePrices}\n  title=\"Compare Prices\"\n  color=\"#25BEE8\"\n  accessibilityLabel=\"Compare grocery prices\"\n/>"
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst BottomMenuHomeIcon = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/bottom-menu-home-icon.png')}\n      />\n    </View>\n  );\n}\n\nexport default BottomMenuHomeIcon;"
+        }
+      },
+      "renditions": [
+        "menu-bottom-home-icon.png"
+      ],
+      "name": "Bottom Menu Home Icon",
+      "tags": [],
+      "last_updated": "2022-11-08T04:22:34.784Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "f3559880-ef34-472c-8488-70d61e53e575",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "menu-bottom-recipes-icon",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst MenuBottomRecipesIcon = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/menu-bottom-recipes-icon.png')}\n      />\n    </View>\n  );\n}\n\nexport default MenuBottomRecipesIcon;"
+        }
+      },
+      "renditions": [
+        "menu-bottom-recipes-icon.png"
+      ],
+      "name": "Bottom Menu Recipes Icon",
+      "tags": [],
+      "last_updated": "2022-11-08T04:25:15.591Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "7f1cdabe-753c-4e65-835d-524926e98963",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "menu-bottom-settings-icon",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst MenuBottomSettingsIcon = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/menu-bottom-settings-icon.png')}\n      />\n    </View>\n  );\n}\n\nexport default MenuBottomSettingsIcon;"
+        }
+      },
+      "renditions": [
+        "menu-bottom-settings-icon.png"
+      ],
+      "name": "Bottom Menu Settings Icon",
+      "tags": [],
+      "last_updated": "2022-11-08T04:30:14.676Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "eada0712-f541-4e2f-a463-acdb49ee83d5",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "menu-bottom-shopping-list-icon",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst MenuBottomShoppingListIcon = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/menu-bottom-shopping-list-icon.png')}\n      />\n    </View>\n  );\n}\n\nexport default MenuBottomShoppingListIcon;"
+        }
+      },
+      "renditions": [
+        "menu-bottom-shopping-cart-icon.png"
+      ],
+      "name": "Bottom Menu Shopping List Icon",
+      "tags": [],
+      "last_updated": "2022-11-08T04:28:09.088Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "1fe573b3-5136-4e53-b88a-d5ccaf83b924",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [
+        "eefa73f4-527c-4f0a-bdd2-8462966f9800"
+      ],
+      "snippets": {
+        "trigger": "grover-compare-button",
+        "languages": {
+          "javascriptreact": "<Button\n  onPress={onPressCompareGroceries}\n  title=\"Compare Groceries\"\n  color=\"{grover-blue-green}\"\n  accessibilityLabel=\"Compare grocery prices\"\n/>"
         }
       },
       "renditions": [
         "compare-button.png"
       ],
-      "name": "Compare Prices Button",
+      "name": "Compare Button",
       "tags": [],
-      "last_updated": "2022-10-26T03:54:12.378Z",
-      "last_updated_by": "",
-      "description": "The Compare button for the Grover app UI."
+      "last_updated": "2022-11-08T02:59:03.961Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "44593d86-0995-4689-9719-5bc323f6c814",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "grover-icon-logo",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst GroverIconLogo = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/grover-icon-logo.png')}\n      />\n    </View>\n  );\n}\n\nexport default GroverIconLogo;"
+        }
+      },
+      "renditions": [
+        "grover-icon-logo.png"
+      ],
+      "name": "Grover Icon Logo",
+      "tags": [],
+      "last_updated": "2022-11-08T04:08:18.996Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "2fb0d637-77c9-4aef-9e7b-3c6aa3f13d10",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "grover-mascot-logo",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst GroverMascotLogo = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/grover-mascot-logo.png')}\n      />\n    </View>\n  );\n}\n\nexport default GroverMascotLogo;"
+        }
+      },
+      "renditions": [
+        "grover-mascot-logo.png"
+      ],
+      "name": "Grover Mascot Logo",
+      "tags": [],
+      "last_updated": "2022-11-08T04:01:23.294Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "01083d8e-538b-40f8-a085-5ade59cab408",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "grover-text-icon-logo",
+        "languages": {
+          "javascriptreact": "<Image\n  style={styles.groverLogo}\n  source={require('/assets/grover-text-icon-logo.png')}\n/>"
+        }
+      },
+      "renditions": [
+        "grover-text-icon-logo.png"
+      ],
+      "name": "Grover Text + Icon Logo",
+      "tags": [],
+      "last_updated": "2022-11-10T02:16:39.995Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "0c512240-d413-4bcf-a435-bc0e2327a60a",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "grover-text-logo",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst GroverTextLogo = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/grover-text-logo.png')}\n      />\n    </View>\n  );\n}\n\nexport default GroverTextLogo;"
+        }
+      },
+      "renditions": [
+        "grover-text-logo.png"
+      ],
+      "name": "Grover Text Logo",
+      "tags": [],
+      "last_updated": "2022-11-08T04:05:50.321Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "5fc655dc-15e7-4db1-8f5b-da663579caed",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "home-screen-bananas",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst HomeScreenBananas = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/grover-mascot-logo.png')}\n      />\n    </View>\n  );\n}\n\nexport default HomeScreenBananas;"
+        }
+      },
+      "renditions": [
+        "home-screen-bananas.png"
+      ],
+      "name": "Home Screen Bananas",
+      "tags": [],
+      "last_updated": "2022-11-08T04:15:35.809Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "fcd791bb-89a0-42e8-a9b4-aa0df130255c",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "home-screen-broccoli",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst HomeScreenBroccoli = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/home-screen-broccoli.png')}\n      />\n    </View>\n  );\n}\n\nexport default HomeScreenBroccoli;"
+        }
+      },
+      "renditions": [
+        "home-screen-broccoli.png"
+      ],
+      "name": "Home Screen Broccoli",
+      "tags": [],
+      "last_updated": "2022-11-08T04:19:40.081Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "aebfd60b-2cfe-4d05-994f-e475837a9266",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "home-screen-map",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst HomeScreenMap = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/home-screen-map.png')}\n      />\n    </View>\n  );\n}\n\nexport default HomeScreenMap;"
+        }
+      },
+      "renditions": [
+        "home-screen-map.png"
+      ],
+      "name": "Home Screen Map",
+      "tags": [],
+      "last_updated": "2022-11-08T04:11:03.577Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "3a43a4ba-3ed1-4fdb-b485-5adcc5544e8d",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "home-screen-orange",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst HomeScreenOrange = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/home-screen-orange.png')}\n      />\n    </View>\n  );\n}\n\nexport default HomeScreenOrange;"
+        }
+      },
+      "renditions": [
+        "home-screen-orange.png"
+      ],
+      "name": "Home Screen Orange",
+      "tags": [],
+      "last_updated": "2022-11-08T04:17:31.272Z",
+      "last_updated_by": ""
+    },
+    {
+      "id": "19c20efd-699c-4a1d-ac88-e3a3c544de40",
+      "class": "component",
+      "type": "page",
+      "related_entity_ids": [],
+      "snippets": {
+        "trigger": "home-screen-strawberries",
+        "languages": {
+          "javascriptreact": "import React from 'react';\nimport { View, Image, StyleSheet } from 'react-native';\n\nconst styles = StyleSheet.create({\n  container: {\n    paddingTop: 50,\n  },\n  tinyLogo: {\n    width: 50,\n    height: 50,\n  },\n  logo: {\n    width: 66,\n    height: 58,\n  },\n});\n\nconst HomeScreenStrawberries = () => {\n  return (\n    <View style={styles.container}>\n      <Image\n        style={styles.tinyLogo}\n        source={require('/assets/home-screen-strawberries.png')}\n      />\n    </View>\n  );\n}\n\nexport default HomeScreenStrawberries;"
+        }
+      },
+      "renditions": [
+        "home-screen-strawberries.png"
+      ],
+      "name": "Home Screen Strawberries",
+      "tags": [],
+      "last_updated": "2022-11-08T04:13:59.942Z",
+      "last_updated_by": ""
     }
   ]
 }

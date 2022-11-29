@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d6bbfc2f-c31c-4d5a-943f-2e40659d6961" name="Changes" comment="" />
+    <list default="true" id="d6bbfc2f-c31c-4d5a-943f-2e40659d6961" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/.expo-shared/assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/.expo-shared/assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/babel.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/babel.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/grover-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/grover-app/package.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
