@@ -8,6 +8,7 @@ export async function userResolver({
 }): Promise<User | null> {
   const user = await UserModel.findOne({ where: { email } })
   if (!user) return null
+
   return {
     id: user.id.toString(),
     name: `${user.firstName} ${user.lastName}`,
