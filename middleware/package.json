@@ -4,6 +4,7 @@
   "description": "This directory is for files associated with the middleware between the frontend and the backend. The middleware will be implemented in the form of a GraphQL Schema.",
   "scripts": {
     "test": "serverless invoke local -f graphql -p test/query.json",
+    "test:pim": "serverless invoke local -f graphql -p test/products_in_merchant.json",
     "codegen": "graphql-codegen --config codegen.ts",
     "deploy": "serverless deploy"
   },
