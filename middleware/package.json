@@ -5,6 +5,7 @@
   "scripts": {
     "test": "serverless invoke local -f graphql -p test/query.json",
     "test:pim": "serverless invoke local -f graphql -p test/products_in_merchant.json",
+    "test:u": "serverless invoke local -f graphql -p test/user.json",
     "codegen": "graphql-codegen --config codegen.ts",
     "deploy": "serverless deploy"
   },
