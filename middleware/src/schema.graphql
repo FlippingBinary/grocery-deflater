@@ -196,6 +196,8 @@ This is the USER profile
 type User {
   id: ID!
   name: String!
+  firstName: String!
+  lastName: String!
   email: String!
   password: String!
   mobileNumber: String!

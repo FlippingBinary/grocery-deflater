@@ -12,6 +12,8 @@ export async function userResolver({
   return {
     id: user.id.toString(),
     name: `${user.firstName} ${user.lastName}`,
+    firstName: user.firstName,
+    lastName: user.lastName,
     email: user.email,
     password: user.password,
     mobileNumber: user.mobileNumber,
