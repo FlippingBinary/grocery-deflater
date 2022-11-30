@@ -194,12 +194,19 @@ input UpdateProductPriceInput {
 This is the USER profile
 """
 type User {
+  "The User's unique identifier."
   id: ID!
+  "The User's full name."
   name: String!
+  "The User's first name or given name."
   firstName: String!
+  "The User's last name or surname."
   lastName: String!
+  "The User's email address."
   email: String!
+  "The User's password hash."
   password: String!
+  "The User's mobile phone number."
   mobileNumber: String!
 }
 
