@@ -1,13 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal } from 'react-native';
+import { useState,useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchBar, Card, FAB, Icon } from '@rneui/themed';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { request, gql } from 'graphql-request'
-
+// import Search from './searchComponents/SearchBar.js';
+// import BookData from './fake_date.json';
 const AWS_GRAPHQL_ENDPOINT = 'https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/';
 
 const UPDATE_PRODUCT_PRICE = gql`
@@ -376,6 +377,7 @@ const ProductsScreen = ({route, navigation}) => {
   );
 };
 
+
 const HomeScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
@@ -389,7 +391,7 @@ const HomeScreen = ({navigation}) => {
           }}
           source={ require('./assets/dsp/assets/images/grover-text-logo.png')}
       />
-      <SearchBar
+        <SearchBar
           containerStyle={{
             width: '95%',
             marginBottom: 15,
@@ -399,15 +401,15 @@ const HomeScreen = ({navigation}) => {
           }}
           placeholder="Search for grocery deals"
           lightTheme
-          round
-          //value={this.state.searchValue}
-          //onChangeText={(text) => this.searchFunction(text)}
-        /* BC (11/20/2022): FOR ANTHONY: Use this event handler to submit the query to the API
+          // value={updateSearch}
+          // onChangeText={(text) => this.searchFunction(text)}
+         /* BC (11/20/2022): FOR ANTHONY: Use this event handler to submit the query to the API
          * The API sandbox is located here: https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/
          * The documentation for the Searchbar is here: https://reactnativeelements.com/docs/components/searchbar 
          * The documentation for the onSubmitEditing property is here: https://reactnative.dev/docs/textinput#onsubmitediting */
           // onSubmitEditing={({text}) => send query to API } 
-        />
+        /> 
+      
       <Image
           style={{ 
             position: 'relative',
@@ -446,14 +448,62 @@ const HomeScreen = ({navigation}) => {
   );
 };
 
+
+
+// Using this page to build out the search functionality
 const RecipesScreen = () => {
+  const [filteredData,setFilteredData] = useState([]);
+  const [masterData,setmasterData] = useState([]);
+  
+  useEffect(() => {
+    fetchPosts();
+    return () =>{
+
+    }
+  },[])
+  
+  const fetchPosts = () => {
+
+    const apiURL = 'https://jsonplaceholder.typicode.com/posts';
+    fetch(apiURL)
+    .then((response) => response.json())
+    .then((responseJson) => {
+      setFilteredData(responseJson);
+      setmasterData(responseJson);
+    }).catch((erorr) => {
+      console.error(error);
+    })
+  }
+  
+const ItemView = ({item}) => {
   return (
-    <View style={styles.container}>
-      <Text>Recipes Screen</Text>
+    <Text style = {styles.headerText}>
+      {item.id}{' .'}{item.title.toUpperCase()}
+    </Text>
+  )
+}
+const ItemSeparatorView = () => {
+  return (
+    <View
+    style={{height:0.5,width:'100%',backgroundColor:'white'}}
+    />
+  )
+}
+  return (
+
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={filteredData}
+        keyExtractor={(item,index) => index.toString()}
+        ItemSeparatorComponent = {ItemSeparatorView}
+        renderItem={ItemView}
+      />
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 };
+
+
 
 const ComparePricesScreen = () => {
   return (
