@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "This directory is for files associated with the middleware between the frontend and the backend. The middleware will be implemented in the form of a GraphQL Schema.",
   "scripts": {
-    "test": "serverless invoke local -f graphql -p test/query.json",
+    "test:pic": "serverless invoke local -f graphql -p test/products_in_categories.json",
     "test:pim": "serverless invoke local -f graphql -p test/products_in_merchant.json",
     "test:u": "serverless invoke local -f graphql -p test/user.json",
     "test:mp": "serverless invoke local -f graphql -p test/mutate_price.json",
