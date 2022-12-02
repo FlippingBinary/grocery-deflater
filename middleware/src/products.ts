@@ -225,6 +225,25 @@ export async function productsResolver({
       categoryId: item.product.categoryId.toString(),
     }))
   }
+
+  const where: WhereOptions<ProductModel> = {}
+  if (productId !== undefined) where.id = productId
+  if (name !== undefined) where.name = name
+  if (categoryId !== undefined) where.categoryId = categoryId
+  const products = await ProductModel.findAll({
+    where,
+  })
+
+  if (!products) return []
+
+  return products.map(
+    (product): Product => ({
+      id: product.id.toString(),
+      name: product.name,
+      picture: product.picture,
+      categoryId: product.categoryId.toString(),
+    })
+  )
 }
 
 export async function updateProductPriceMutation(
