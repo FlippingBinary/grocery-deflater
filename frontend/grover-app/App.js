@@ -779,8 +779,8 @@ const ShoppingListScreen = ({navigation}) => {
                 <View style ={{padding:20,flexDirection:'row'}}>
                   <Text style={styles.label}>{item.food.label}</Text>
                   <TouchableOpacity onPress={() => {navigation.navigate('Price Update')}}> 
-                    <Text style={{marginLeft:50,fontSize:20,color:'#008080'}}>
-                      Details
+                    <Text style={{marginLeft:25,fontSize:20,color:'#008080'}}>
+                      Update Price
                     </Text>
                   </TouchableOpacity>
                 </View>
