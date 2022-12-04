@@ -1,14 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState,useEffect} from 'react';
-import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal,ScrollView, SafeAreaView, Keyboard, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal,ScrollView, SafeAreaView, Keyboard, ActivityIndicator,Alert,Button } from 'react-native';
 import { NavigationContainer, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchBar, Card, FAB, Icon } from '@rneui/themed';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { request, gql } from 'graphql-request'
-// import Search from './searchComponents/SearchBar.js';
-// import BookData from './fake_date.json';
+
 const AWS_GRAPHQL_ENDPOINT = 'https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/';
 
 const UPDATE_PRODUCT_PRICE = gql`
@@ -377,7 +376,6 @@ const ProductsScreen = ({route, navigation}) => {
   );
 };
 
-
 const HomeScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
@@ -391,7 +389,7 @@ const HomeScreen = ({navigation}) => {
           }}
           source={ require('./assets/dsp/assets/images/grover-text-logo.png')}
       />
-        <SearchBar
+      <SearchBar
           containerStyle={{
             width: '95%',
             marginBottom: 15,
@@ -401,15 +399,15 @@ const HomeScreen = ({navigation}) => {
           }}
           placeholder="Search for grocery deals"
           lightTheme
-          // value={updateSearch}
-          // onChangeText={(text) => this.searchFunction(text)}
-         /* BC (11/20/2022): FOR ANTHONY: Use this event handler to submit the query to the API
+          
+          //value={this.state.searchValue}
+          //onChangeText={(text) => this.searchFunction(text)}
+        /* BC (11/20/2022): FOR ANTHONY: Use this event handler to submit the query to the API
          * The API sandbox is located here: https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/
          * The documentation for the Searchbar is here: https://reactnativeelements.com/docs/components/searchbar 
          * The documentation for the onSubmitEditing property is here: https://reactnative.dev/docs/textinput#onsubmitediting */
           // onSubmitEditing={({text}) => send query to API } 
-        /> 
-      
+      />
       <Image
           style={{ 
             position: 'relative',
@@ -448,9 +446,6 @@ const HomeScreen = ({navigation}) => {
   );
 };
 
-
-
-// Using this page to build out the search functionality
 const RecipesScreen = ({navigation}) => {
   const [recipes,setRecipes] = useState();
 
@@ -464,7 +459,7 @@ const RecipesScreen = ({navigation}) => {
 
   const recipeApiKey = 'e558efa4e564f8a2d9b77a23ede541c0';
 
-  const recipeApiUrl = `https://api.edamam.com/search?q=${searchQuery}&app_id=${recipeApiId}&app_key=${recipeApiKey}&from=0&to=${numberOfRecipes}&calories=591-722&health=alcohol-free`;
+  const recipeApiUrl = `https://api.edamam.com/search?q=${searchQuery}&app_id=${recipeApiId}&app_key=${recipeApiKey}&from=0&to=${numberOfRecipes}&calories=500-772&health=alcohol-free`;
 
   async function apiCall() {
     setLoading(true);
@@ -617,36 +612,6 @@ const RecipesScreen = ({navigation}) => {
   // );
 };
 
-
-
-const ComparePricesScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text>Compare Prices Screen</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-};
-
-const ShoppingListScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text>Shopping List Screen</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-};
-
-const SettingsScreen = () => {
-
-  return (
-    <View style={styles.container}>
-      <Text>Settings Screen</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-};
-
 const RecipeDetails = ({route}) => {
   
   const {recipe} = route?.params;
@@ -715,8 +680,131 @@ const RecipeDetails = ({route}) => {
       </View>
     </ScrollView>
   );
+};
+
+const FoodDetails = ({route}) => {
   
-}
+  // const {food} = route?.params;
+  
+  return (
+    <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
+        <TextInput placeholder ='Enter Name of Store'
+        style={styles.inputField}
+        />
+
+        <TextInput placeholder= 'New Price'
+            style = {[styles.inputField, {width:'20%',fontSize:10,marginLeft:15,color:'black',fontWeight:'bold'}]}
+            keyboardType = 'number-pad'
+          />
+    </View>
+  );
+};
+
+const ComparePricesScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Compare Prices Screen</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+};
+
+const ShoppingListScreen = ({navigation}) => {
+  const [foods,setFoods] = useState();
+
+  const [searchQuery,setSearchQuery] = useState('');
+
+  const [numberOfFoods, setnumberOfFoods] = useState('1')
+
+  const [loading,setLoading] = useState(false);
+
+  const foodApiId = 'f9bc12d8';
+
+  const foodApiKey = 'ee4551f2912e719c9754df483fd367dd';
+
+  const foodApiUrl = `https://api.edamam.com/api/food-database/v2/parser?app_id=${foodApiId}&app_key=${foodApiKey}&ingr=${searchQuery}&from=0&to=${numberOfFoods}&calories=0-500&health=alcohol-free`;
+  // ${searchQuery}
+  async function apiCall() {
+    setLoading(true);
+    let resp = await fetch(foodApiUrl);
+    let responseJson = await resp.json();
+    setFoods(responseJson.hints);
+    setLoading(false);
+    Keyboard.dismiss();
+    setSearchQuery('');
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    apiCall()
+  },[])
+
+
+  return (
+    <View style={styles.container}>
+      <Text style = {{fontSize:23,fontWeigth:'800',width:'90%',color:'#008080'}}>
+        What Food Would You Like to Search
+      </Text>
+
+      <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
+        <TextInput placeholder ='Search Food...'
+        style={styles.inputField}
+        onChangeText = {text => setSearchQuery(text)}
+        />
+
+        <TextInput placeholder= 'Enter Number of Foods'
+            onChangeText = {text => setnumberOfFoods(text)}
+            style = {[styles.inputField, {width:'20%',fontSize:10,marginLeft:15,color:'black',fontWeight:'bold'}]}
+            value ={numberOfFoods}
+            keyboardType = 'number-pad'
+            />
+      </View>
+
+      <TouchableOpacity style = {styles.button}
+      onPress ={apiCall}
+      title = 'submit'>
+          <Text style = {styles.buttonText}>Search</Text>
+      </TouchableOpacity>
+        
+      <SafeAreaView style= {{flex:1}}>
+        {loading ? 
+          <ActivityIndicator size='large' color='#008080'/>:
+          <FlatList style ={styles.recipe}
+            data ={foods}
+            renderItem = {({item}) => (
+              <View style = {styles.recipe}>
+                <Image style ={styles.image}
+                source={{uri:`${item.food.image}`}}
+                />
+                <View style ={{padding:20,flexDirection:'row'}}>
+                  <Text style={styles.label}>{item.food.label}</Text>
+                  <TouchableOpacity onPress={() => {navigation.navigate('Price Update')}}> 
+                    <Text style={{marginLeft:50,fontSize:20,color:'#008080'}}>
+                      Details
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            keyExtractor={(item,index) => index.toString()}
+          />
+        }
+          
+      </SafeAreaView>
+
+      <StatusBar style="auto" />
+    </View>
+  );
+};
+
+const SettingsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Settings Screen</Text>
+      <StatusBar style="auto" />
+    </View>
+  ); 
+};
 
 const Stack = createNativeStackNavigator();
 
@@ -845,6 +933,8 @@ const App = () => {
           <Stack.Screen name="Products" component={ProductsScreen}/>    
           <Stack.Screen name="Details" component={DetailsScreen}/>
           <Stack.Screen name="RDetails" component={RecipeDetails}/>
+          <Stack.Screen name="Price Update" component={FoodDetails}/>
+
           {/*<Stack.Screen name="AccountSignUp" component={AccountSignUpScreen}/>*/}
         </Stack.Navigator>
       </NavigationContainer>
