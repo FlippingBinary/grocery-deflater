@@ -480,7 +480,7 @@ const RecipesScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style = {{fontSize:23,fontWeigth:'800',width:'90%',color:'#008080'}}>
-        What Recipe Would You Like to Search
+        What Recipe Would You Like to Search ?
       </Text>
 
       <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
@@ -787,12 +787,7 @@ const FoodDetails = () => {
             onPress = { () => Alert.alert("Your update has been received")}
           />
         </View>
-
-        
-
       </View>
-
-
     </ScrollView>
   );
 };
@@ -840,8 +835,19 @@ const ShoppingListScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style = {{fontSize:23,fontWeigth:'800',width:'90%',color:'#008080'}}>
-        What Food Would You Like to Search
+        What Food Would You Like to Search ?
       </Text>
+      <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='View Shopping Cart'
+            onPress={() => navigation.navigate("SCDetails")}
+          />
 
       <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
         <TextInput placeholder ='Search Food...'
@@ -894,6 +900,57 @@ const ShoppingListScreen = ({navigation}) => {
       <StatusBar style="auto" />
     </View>
   );
+};
+
+const ShoppingCartDetails = () => {
+  return (
+    <ScrollView>
+      <View style={styles.rDetails}>
+
+        <View style={styles.recipeItem}>
+        <Text style ={styles.ingredients}>Meat</Text>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Food Lion - 
+            2768 K St, NW, DC 09291
+          </Text>
+          <Text style ={styles.ingredients}>$2.99</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={styles.ingredients}>Cheese</Text>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Giant - 
+            123 Malcom X Rd, SE, DC 97321
+          </Text>
+          <Text style ={styles.ingredients}>$1.99</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={styles.ingredients}>Bread</Text>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Walmart - 
+            3536 Capitol Ln St, NW, DC 09291
+          </Text>
+          <Text style ={styles.ingredients}>$1.60</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='                                       Checkout                                               '
+            onPress = { () => Alert.alert("Total is $6.39")}
+          />
+        </View> 
+
+      </View>
+    </ScrollView>
+  ); 
 };
 
 const SettingsScreen = () => {
@@ -975,7 +1032,7 @@ const DetailsScreen = () => {
         <Tab.Screen 
           name="ShoppingList" 
           options={{
-            tabBarLabel: "Shopping List",
+            tabBarLabel: "Search",
             tabBarAccessibilityLabel: "Shopping List Screen",
             headerShown: false,
             tabBarIcon: () => (
@@ -1033,6 +1090,9 @@ const App = () => {
           <Stack.Screen name="Details" component={DetailsScreen}/>
           <Stack.Screen name="RDetails" component={RecipeDetails}/>
           <Stack.Screen name="Price Update" component={FoodDetails}/>
+          <Stack.Screen name="SCDetails" component={ShoppingCartDetails}/>
+
+          
 
           {/*<Stack.Screen name="AccountSignUp" component={AccountSignUpScreen}/>*/}
         </Stack.Navigator>
