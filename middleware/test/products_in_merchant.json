@@ -5,6 +5,5 @@
     "content-type": "application/json"
   },
   "requestContext": {},
-  "body": "{\"query\":\"query PriceLookup($merchantFilter: MerchantInput, $productsFilter: ProductInput) { merchants(filterBy: $merchantFilter) { name products(filterBy: $productsFilter) { name price } }}\",\"variables\":{\"merchantFilter\":{\"name\":{\"matches\":\"Costco\"}},\"productsFilter\":{\"category\":{\"startsWith\":\"Produce\"}}}}"
+  "body": "{\"query\":\"query PriceLookup($merchantFilter: MerchantInput, $productsFilter: ProductInput) {  merchants(filterBy: $merchantFilter) {    name    products(filterBy: $productsFilter) {      id      name      price    }  }}\",\"variables\":{\"merchantFilter\":{\"name\":{\"matches\":\"Costco\"}},\"productsFilter\":{\"category\":{\"startsWith\":\"Produce\"},\"name\":{\"startsWith\":\"Banana\"}}}}"
 }
-
