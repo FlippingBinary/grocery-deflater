@@ -127,7 +127,7 @@ export async function productsResolver({
     const locationId = parseInt(merchant.id)
     const where: WhereOptions<VariantModel> = { locationId }
     if (productId !== undefined) where.productId = productId
-    if (name !== undefined) where['$product.name$'] = name
+    if (name !== undefined) where['$product.Product_name$'] = name
     if (categoryId !== undefined)
       where['$product.Category_id$'] = {
         [Op.in]: categoryId,
