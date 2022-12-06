@@ -6,8 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchBar, Card, FAB, Icon } from '@rneui/themed';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { request, gql } from 'graphql-request'
+import { request, gql } from 'graphql-request';
 
+const REPLIT_IMAGES_ENDPOINT = "https://CSCI-660-Grover-App.bencorriette.repl.co/images/"
 const AWS_GRAPHQL_ENDPOINT = 'https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/';
 
 const UPDATE_PRODUCT_PRICE = gql`
@@ -20,71 +21,72 @@ mutation Mutation($updateProductPriceInput: UpdateProductPriceInput!) {
 
 const GET_DAIRY_PRODUCTS = gql`
 query GetDairyProducts {
-  categories(filterBy: { name: { matches: "Dairy" } }) {
-    id
-    name
-    products {
-      id
+  merchants {
+    products(filterBy: { category: { matches: "Dairy" } }) {
       name
+      picture
       price
       weight
+      id
       merchant {
-        name
+        id
         location {
           address
           city
           state
           zip
         }
+        name
       }
     }
-    description
   }
 }
 `;
 
 const GET_MEAT_PRODUCTS = gql`
 query GetMeatProducts {
-  categories(filterBy: { name: { matches: "Meat" } }) {
-    name
-    products {
+  merchants {
+    products(filterBy: { category: { matches: "Meat" } }) {
       name
+      picture
       price
       weight
+      id
       merchant {
-        name
+        id
         location {
           address
           city
           state
           zip
         }
+        name
       }
     }
-    description
   }
 }
 `;
 
 const GET_PRODUCE_PRODUCTS = gql`
 query GetProduceProducts {
-  categories(filterBy: { name: { matches: "Produce" } }) {
-    name
-    products {
+  merchants {
+    products(filterBy: { category: { matches: "Produce" } }) {
       name
+      picture
       price
       weight
+      id
       merchant {
-        name
+        id
         location {
           address
           city
           state
           zip
         }
+        name
       }
     }
-    description
   }
 }
 `;
@@ -111,13 +113,14 @@ export function Item(props) {
   const { item, onPress } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const [priceUpdateText, setPriceUpdateText] = useState('');
+  let productPicture = item.picture;
   let updatedPrice;
   return (
     <TouchableOpacity onPress={onPress} style={styles.item}>
       <View style={styles.centeredView}>
       <Modal
         animationType="slide"
-        transparent={true}
+        transparent={false}
         visible={modalVisible}
         onRequestClose={() => {
           //Alert.alert("Modal has been closed.");
@@ -142,12 +145,32 @@ export function Item(props) {
                 maxHeight: 250, 
                 maxWidth: 250
               }}
-              source={require('./assets/dsp/assets/images/home-screen-broccoli-2.png')}
-              resizeMode="contain" />
+              source={(item.name == 'Milk') ? require('./assets/dsp/assets/images/home-screen-milk.png') : 
+                      (item.name == 'Cottage cheese') ? require('./assets/dsp/assets/images/Cottagecheese.jpg') :
+                      (item.name == 'Sour cream') ? require('./assets/dsp/assets/images/Sourcream.jpg') :
+                      (item.name == 'Yogurt') ? require('./assets/dsp/assets/images/Yogurt.jpg') : 
+                      (item.name == 'Cheese') ? require('./assets/dsp/assets/images/Cheese.jpg') :
+                      (item.name == 'Eggs') ? require('./assets/dsp/assets/images/Eggs.jpg') :
+                      (item.name == 'Beef') ? require('./assets/dsp/assets/images/Beef.jpg') :
+                      (item.name == 'Wild Salmon') ? require('./assets/dsp/assets/images/WildSalmon.jpg') : 
+                      (item.name == 'Alaskan King Crab') ? require('./assets/dsp/assets/images/AlaskanKingCrabLegs.jpg') :
+                      (item.name == 'Lettuce') ? require('./assets/dsp/assets/images/Lettuce.jpg') :
+                      (item.name == 'Oranges') ? require('./assets/dsp/assets/images/Oranges.jpg') :
+                      (item.name == 'Apples') ? require('./assets/dsp/assets/images/Apples.jpg') :
+                      (item.name == 'Bananas') ? require('./assets/dsp/assets/images/Bananas.jpg') : 
+                      (item.name == 'Squash') ? require('./assets/dsp/assets/images/Squash.jpg') :
+                      (item.name == 'Celery') ? require('./assets/dsp/assets/images/Celery.jpg') :
+                      (item.name == 'Cucumber') ? require('./assets/dsp/assets/images/Cucumber.jpg') :
+                      (item.name == 'Mushrooms') ? require('./assets/dsp/assets/images/Mushrooms.jpg') :
+                      (item.name == 'Tomatoes') ? require('./assets/dsp/assets/images/Tomatoes.jpg') :
+                      require('./assets/dsp/assets/images/NoImageAvailable.jpg')
+                }
+              resizeMode="contain" 
+              />
             <Text style={{
               fontSize: 24,
               color: '#748A9D'
-            }}>{item.name.trim() + ' - ' + item.weight + ' oz.'}</Text>
+            }}>{item.name + ' - ' + item.weight + ' oz.'}</Text>
             <Text style={{
               fontSize: 16,
               textAlign: 'center'
@@ -168,26 +191,27 @@ export function Item(props) {
               autoFocus={true}
               keyboardType='numeric'
               defaultValue={'' + item.price + ''}
-              onChangeText={(text) => {updatedPrice = text; console.log(updatedPrice); setPriceUpdateText(updatedPrice) }}
-              onSubmitEditing={() => {console.log(priceUpdateText)}}
+              onChangeText={(text) => { updatedPrice = text; setPriceUpdateText(updatedPrice); }}
+              onSubmitEditing={() => { /*TODO: Validation */ if(Number.isNaN(priceUpdateText)) { alert('You have entered an invalid number; please enter a valid number and try again'); }  }}
             />
             <ActionButton
               title="UPDATE"
               onPress={() => {
-                const variables =
+                const NEW_PRICE = Number(priceUpdateText);
+                const VARIABLES =
                 {
                   "updateProductPriceInput": {
-                    "price": {priceUpdateText},
+                    "price": NEW_PRICE,
                     "productId": '' + item.id + ''
                   }
                 };
-                console.log(priceUpdateText);
-                request(AWS_GRAPHQL_ENDPOINT, UPDATE_PRODUCT_PRICE, variables)
+                request(AWS_GRAPHQL_ENDPOINT, UPDATE_PRODUCT_PRICE, VARIABLES)
                 .then((data) => {
                   console.log(data);
                   setModalVisible(!modalVisible);
                 })
-                .catch((error) => console.error(error))}}
+                .catch((error) => console.error(error))
+              }}
             />
           </View>
         </View>
@@ -197,6 +221,7 @@ export function Item(props) {
         icon={{ name: 'edit', color: '#fff'}} 
         style={{ 
           position: 'absolute',
+          zIndex: 1000,
           top: 15, 
           right: 15 
         }} 
@@ -209,7 +234,7 @@ export function Item(props) {
           height: 180, 
           width: '100%'
         }}
-        source={require('./assets/dsp/assets/images/home-screen-broccoli-2.png')}
+        source={{ uri: `${REPLIT_IMAGES_ENDPOINT}${productPicture}` }}
         resizeMode="contain" />
       <Text style={{
         fontWeight: 'bold',
@@ -219,7 +244,7 @@ export function Item(props) {
       <Text style={{
         fontSize: 14,
         color: '#748A9D'
-      }}>{item.name.trim() + ' - ' + item.weight + ' oz.'}</Text>
+      }}>{item.name + ' - ' + item.weight + ' oz.'}</Text>
       <Text style={{
         fontSize: 10
       }}>{item.merchant.name + '\n'  + item.merchant.location.city + ', '+ item.merchant.location.state + ' ' + item.merchant.location.zip}</Text>
@@ -231,22 +256,26 @@ export function Item(props) {
   );
 }
 
+
+
 export function ProductItem(props) {
   const { productData } = props
-
   const [selectedId, setSelectedId] = useState(null);
+  
   const renderItem = ({ item }) => {
     //const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
     //const color = item.id === selectedId ? 'white' : 'black';
-
-    return (
-      <Item
-        item={item}
-        onPress={() => setSelectedId(item.id)}
-        //backgroundColor={{ backgroundColor }}
-        //textColor={{ color }}
-      />
-    );
+    console.log(item);
+      return (
+        <Item
+          item={item}
+          onPress={() => { 
+            setSelectedId(item.id);
+          }}
+          //backgroundColor={{ backgroundColor }}
+          //textColor={{ color }}
+        />
+      );
   };
 
   return (
@@ -426,19 +455,69 @@ const HomeScreen = ({navigation}) => {
         }}>Featured Deals</Card.Title>
           <DealsButton
             title= 'Dairy'
-            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_DAIRY_PRODUCTS).then((data) => { navigation.navigate({
-              name: "Products", params: {
-                productData: data.categories[0].products
-              }
+            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_DAIRY_PRODUCTS).then((data) => { 
+              // Transpose returned object to new object
+              // Step #1: Create new object
+              let dairyProducts = [];
+              // Step #2: Iterate through returned object to push each object in non-empty array into new object
+              data.merchants.forEach((groupOfProducts) => {
+                if (groupOfProducts.products.length > 0) {
+                  groupOfProducts.products.forEach((product) => {
+                    dairyProducts.push(product);
+                  })
+                }                  
+              })
+              console.log(dairyProducts);
+              // Step #3: Assign new object to productData parameter
+              navigation.navigate({
+                name: "Products", params: {
+                  productData: dairyProducts
+                }
               })})}
           />
           <DealsButton
             title= 'Meat'
-            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_MEAT_PRODUCTS).then((data) => console.log(data))}
+            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_MEAT_PRODUCTS).then((data) => { 
+              // Transpose returned object to new object
+              // Step #1: Create new object
+              let meatProducts = [];
+              // Step #2: Iterate through returned object to push each object in non-empty array into new object
+              data.merchants.forEach((groupOfProducts) => {
+                if (groupOfProducts.products.length > 0) {
+                  groupOfProducts.products.forEach((product) => {
+                    meatProducts.push(product);
+                  })
+                }                  
+              })
+              console.log(meatProducts);
+              // Step #3: Assign new object to productData parameter
+              navigation.navigate({
+                name: "Products", params: {
+                  productData: meatProducts
+                }
+              })})}
           />
           <DealsButton
             title= 'Produce'
-            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_PRODUCE_PRODUCTS).then((data) => console.log(data))}
+            onPress={() => request(AWS_GRAPHQL_ENDPOINT, GET_PRODUCE_PRODUCTS).then((data) => { 
+              // Transpose returned object to new object
+              // Step #1: Create new object
+              let produceProducts = [];
+              // Step #2: Iterate through returned object to push each object in non-empty array into new object
+              data.merchants.forEach((groupOfProducts) => {
+                if (groupOfProducts.products.length > 0) {
+                  groupOfProducts.products.forEach((product) => {
+                    produceProducts.push(product);
+                  })
+                }                  
+              })
+              console.log(produceProducts);
+              // Step #3: Assign new object to productData parameter
+              navigation.navigate({
+                name: "Products", params: {
+                  productData: produceProducts
+                }
+              })})}
           />
       </Card>
       <StatusBar style="auto" />
@@ -701,12 +780,13 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight || 0,
   },
   item: {
+    width: '46%',
     borderWidth: 1,
     borderColor: '#DBE2ED',
     borderRadius: 10,
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16,
+    marginHorizontal: 8,
   },
   productTitle: {
     fontSize: 12,
