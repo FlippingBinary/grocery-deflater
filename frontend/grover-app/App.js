@@ -682,21 +682,118 @@ const RecipeDetails = ({route}) => {
   );
 };
 
-const FoodDetails = ({route}) => {
+const FoodDetails = () => {
   
-  // const {food} = route?.params;
+  const [number, setNumber] = React.useState(1);
+
+  const getRandomNumber = () => {
+      const randomNumber = Math.floor(Math.random() * 100) + 1;
+      setNumber(randomNumber);
+  }
   
   return (
-    <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
-        <TextInput placeholder ='Enter Name of Store'
-        style={styles.inputField}
-        />
+    <ScrollView>
+      <View style={styles.rDetails}>
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Food Lion - 
+            2768 K St, NW, DC 09291
+          </Text>
+          <Text style ={styles.ingredients}>$2.99</Text>
+          <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='Add to Cart'
+            onPress = { () => Alert.alert("Added to Cart !")}
+          />
 
-        <TextInput placeholder= 'New Price'
-            style = {[styles.inputField, {width:'20%',fontSize:10,marginLeft:15,color:'black',fontWeight:'bold'}]}
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Giant - 
+            123 Malcom X Rd, SE, DC 97321
+          </Text>
+          <Text style ={styles.ingredients}>$1.99</Text>
+          <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='Add to Cart'
+            onPress = { () => Alert.alert("Added to Cart !")}
+          />
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Walmart - 
+            3536 Capitol Ln St, NW, DC 09291
+          </Text>
+          <Text style ={styles.ingredients}>$1.60</Text>
+          <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='Add to Cart'
+            onPress = { () => Alert.alert("Added to Cart !")}
+          />
+        </View>
+
+        <View style={styles.recipeItem}>
+          <TextInput placeholder ='What Store ?'
+            style={{height:'50%',
+            width:'35%',
+            backgroundColor:'#008080',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:5,
+            fontSize:15}}
+          />
+          <TextInput placeholder ='New Price ?'
+            style={{height:'50%',
+            width:'35%',
+            backgroundColor:'#008080',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
             keyboardType = 'number-pad'
           />
-    </View>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Button 
+            style={{height:'50%',
+            width:'50%',
+            backgroundColor:'red',
+            borderRadius:10,
+            marginTop: 10,
+            paddingLeft:20,
+            fontSize:15}}
+            title='                                       Update Price                                        '
+            onPress = { () => Alert.alert("Your update has been received")}
+          />
+        </View>
+
+        
+
+      </View>
+
+
+    </ScrollView>
   );
 };
 
@@ -778,8 +875,10 @@ const ShoppingListScreen = ({navigation}) => {
                 />
                 <View style ={{padding:20,flexDirection:'row'}}>
                   <Text style={styles.label}>{item.food.label}</Text>
+
                   <TouchableOpacity onPress={() => {navigation.navigate('Price Update')}}> 
-                    <Text style={{marginLeft:25,fontSize:20,color:'#008080'}}>
+                    <Text style={{marginLeft:25,width:'100%',fontSize:20,color:'#008080'}}>
+
                       Update Price
                     </Text>
                   </TouchableOpacity>
