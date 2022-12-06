@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "path": "/",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "requestContext": {},
+  "body": "{\"query\":\"query User($email: String!) {  user(email: $email) {    name    mobileNumber  }}\",\"variables\":{\"email\":\"jon@gmail.com\"}}"
+}

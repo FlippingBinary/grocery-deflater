@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { useState,useEffect} from 'react';
+import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal,ScrollView, SafeAreaView, Keyboard, ActivityIndicator } from 'react-native';
+import { NavigationContainer, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SearchBar, Card, FAB, Icon } from '@rneui/themed';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -525,12 +525,239 @@ const HomeScreen = ({navigation}) => {
   );
 };
 
-const RecipesScreen = () => {
+const RecipesScreen = ({navigation}) => {
+  const [recipes,setRecipes] = useState();
+
+  const [searchQuery,setSearchQuery] = useState('');
+
+  const [numberOfRecipes, setnumberOfRecipes] = useState('1')
+
+  const [loading,setLoading] = useState(false);
+
+  const recipeApiId = 'f885fb0f';
+
+  const recipeApiKey = 'e558efa4e564f8a2d9b77a23ede541c0';
+
+  const recipeApiUrl = `https://api.edamam.com/search?q=${searchQuery}&app_id=${recipeApiId}&app_key=${recipeApiKey}&from=0&to=${numberOfRecipes}&calories=591-722&health=alcohol-free`;
+
+  async function apiCall() {
+    setLoading(true);
+    let resp = await fetch(recipeApiUrl);
+    let responseJson = await resp.json();
+    setRecipes(responseJson.hits);
+    setLoading(false);
+    Keyboard.dismiss()
+    setSearchQuery('')
+  }
+
+  useEffect(() => {
+    setLoading(true)
+    apiCall()
+  },[])
+
+
   return (
     <View style={styles.container}>
-      <Text>Recipes Screen</Text>
+      <Text style = {{fontSize:23,fontWeigth:'800',width:'90%',color:'#008080'}}>
+        What Recipe Would You Like to Search
+      </Text>
+
+      <View style = {{display:'flex',flexDirection:'row',color:'black',fontWeight:'bold'}}>
+        <TextInput placeholder ='Search Recipe...'
+        style={styles.inputField}
+        onChangeText = {text => setSearchQuery(text)}
+        />
+
+        <TextInput placeholder= 'Enter Number of Recipes'
+            onChangeText = {text => setnumberOfRecipes(text)}
+            style = {[styles.inputField, {width:'20%',fontSize:10,marginLeft:15,color:'black',fontWeight:'bold'}]}
+            value ={numberOfRecipes}
+            keyboardType = 'number-pad'
+            />
+      </View>
+
+      <TouchableOpacity style = {styles.button}
+      onPress ={apiCall}
+      title = 'submit'>
+          <Text style = {styles.buttonText}>Search</Text>
+      </TouchableOpacity>
+        
+      <SafeAreaView style= {{flex:1}}>
+        {loading ? 
+          <ActivityIndicator size='large' color='#008080'/>:
+          <FlatList style ={styles.recipe}
+            data ={recipes}
+            renderItem = {({item}) => (
+              <View style = {styles.recipe}>
+                <Image style ={styles.image}
+                source={{uri:`${item.recipe.image}`}}
+                />
+                <View style ={{padding:20,flexDirection:'row'}}>
+                  <Text style={styles.label}>{item.recipe.label}</Text>
+                  <TouchableOpacity onPress={() => {navigation.navigate('RDetails',{recipe:item.recipe})}}> 
+                    <Text style={{marginLeft:50,fontSize:20,color:'#008080'}}>
+                      Details
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            keyExtractor={(item,index) => index.toString()}
+          />
+        }
+          
+        </SafeAreaView>
+
       <StatusBar style="auto" />
     </View>
+  );
+  // IGNORE - Was figuring out the search functionality
+
+  // const [filteredData,setFilteredData] = useState([]);
+  // const [masterData,setmasterData] = useState([]);
+  // const [search,setsearch] = useState('');
+  
+  // useEffect(() => {
+  //   fetchPosts();
+  //   return () =>{
+
+  //   }
+  // },[])
+  
+  // const fetchPosts = () => {
+
+  //   const apiURL = 'https://jsonplaceholder.typicode.com/posts';
+  //   fetch(apiURL)
+  //   .then((response) => response.json())
+  //   .then((responseJson) => {
+  //     setFilteredData(responseJson);
+  //     setmasterData(responseJson);
+  //   }).catch((erorr) => {
+  //     console.error(error);
+  //   })
+  // }
+
+  // const searchFilter = (text) => {
+  //   if (text) {
+  //     const newData = masterData.filter((item) => {
+  //       const itemData = item.title ? 
+  //                        item.title.toUpperCase()
+  //                        : ''.toUpperCase();
+  //       const textData = text.toUpperCase();
+  //       return itemData.indexOf(textData) > -1;
+  //     });
+
+  //     setFilteredData(newData);
+  //     setsearch(text);
+  //   } else {
+  //     setFilteredData(masterData);
+  //     setsearch(text);
+  //   }
+  // }
+  
+  // const ItemView = ({item}) => {
+  //   return (
+  //     <Text style = {styles.headerText}>
+  //       {item.id}{' .'}{item.title.toUpperCase()}
+  //     </Text>
+  //  )
+  // }
+  // const ItemSeparatorView = () => {
+  //   return (
+  //     <View
+  //   style={{height:0.5,width:'100%',backgroundColor:'white'}}
+  //     />
+  //   )
+  // } 
+  // return (
+
+  //   <SafeAreaView style={styles.container2}>
+  //     <TextInput
+  //       style={styles.textInputStyle}
+  //       value= {search}
+  //       placeholder="Search Here"
+  //       underlineColorAndroid="transparent"
+  //       onChangeText={(text) => searchFilter(text)}
+
+  //     />
+  //     <FlatList
+  //       data={filteredData}
+  //       keyExtractor={(item,index) => index.toString()}
+  //       ItemSeparatorComponent = {ItemSeparatorView}
+  //       renderItem={ItemView}
+  //     />
+  //     <StatusBar style="auto" />
+  //   </SafeAreaView>
+  // );
+};
+
+const RecipeDetails = ({route}) => {
+  
+  const {recipe} = route?.params;
+  
+  return (
+    <ScrollView>
+      <View style={styles.rDetails}>
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
+            Ingredients:
+          </Text>
+          {/* <Text style ={styles.ingredients}></Text> */}
+          <Text style ={styles.ingredients}>{`${recipe.ingredients.map((item) => item['food'] ) } `}</Text>
+
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Food Category:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.ingredients.map((item) => item['foodCategory'] ) } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Calories:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.calories } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Label:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.label } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Meal Type:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.mealType } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Description:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.ingredientLines } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Diet Label:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.dietLabels } `}</Text>
+        </View>
+
+        <View style={styles.recipeItem}>
+          <Text style ={{fontSize:22,color: '#008080',fontWeight:'800'}}>
+            Cuisine Type:
+          </Text>
+          <Text style = {styles.ingredients}>{`${recipe.cuisineType } `}</Text>
+        </View>
+
+      </View>
+    </ScrollView>
   );
 };
 
@@ -687,6 +914,7 @@ const App = () => {
           <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
           <Stack.Screen name="Products" component={ProductsScreen}/>    
           <Stack.Screen name="Details" component={DetailsScreen}/>
+          <Stack.Screen name="RDetails" component={RecipeDetails}/>
           {/*<Stack.Screen name="AccountSignUp" component={AccountSignUpScreen}/>*/}
         </Stack.Navigator>
       </NavigationContainer>
@@ -838,6 +1066,84 @@ const styles = StyleSheet.create({
     color: '#748A9D',
     textAlign: 'center',
     textTransform: 'uppercase'
+  },
+  textInputStyle:{
+    height:60,
+    width: '95%',
+    borderWidth:1,
+    paddingLeft:20,
+    margin:5,
+    borderColor: 'blue',
+    backgroundColor:'white'
+  },
+  inputField:{
+    height:'120%',
+    width:'65%',
+    backgroundColor:'#008080',
+    borderRadius:20,
+    marginTop: 10,
+    paddingLeft:15
+  },
+  buttons:{
+    flexDirection:'row'
+  },
+  button:{
+    backgroundColor:'green',
+    width:'90%',
+    alignItems:'center',
+    margin:15,
+    height:35,
+    borderRadius:15,
+    justifyContentContent:'center',
+    marginTop:25
+  },
+  buttonText:{
+    color:'white',
+    fontSize:20,
+    fontWeight:'bold'
+  },
+  image:{
+    width:'100%',
+    height:200,
+    borderRadius:20
+  },
+  label:{
+    fontSize:15,
+    width:'60%',
+    color:'#008080',
+    fontWeight:'700'
+
+  },
+  recipe:{
+    shadowColor:'black',
+    shadowOpacity:0.26,
+    shadowOffset:{width:0,height:2},
+    shadowRadius:8,
+    elevation:5,
+    borderRadius:20,
+    backgroundColor:'white',
+    margin:10,
+    marginBottom:40
+  },
+  rDetails: {
+    marginBottom:30,
+    padding:5
+  },
+  ingredients: {
+    fontSize:20,
+    color: '#008080'
+  },
+  recipeItem:{
+    shadowColor:'black',
+    shadowOpacity:0.26,
+    shadowOffset:{width:0,height:2},
+    shadowRadius:8,
+    elevation:10,
+    borderRadius:2,
+    backgroundColor:'white',
+    margin:10,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   }
 });
 

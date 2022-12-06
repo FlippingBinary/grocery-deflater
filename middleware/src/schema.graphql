@@ -15,15 +15,15 @@ type Product {
   "The filename of a product picture."
   picture: String!
   "The price of the product at a specific merchant."
-  price: Float!
+  price: Float
   "The weight of the product."
-  weight: Float!
+  weight: Float
   "The identifier of the category of this product."
-  categoryId: String!
+  categoryId: String
   "A reference to the category of this product."
   category: Category
   "The identifier of the merchant selling this product."
-  merchantId: String!
+  merchantId: String
   "The merchant who sells the product at the given price and weight."
   merchant: Merchant
   "List of merchants who sell this product."
@@ -73,6 +73,18 @@ type Merchant {
   "The location of the merchant."
   location: Location
   "A list of products carried by merchant."
+  products(filterBy: ProductInput): [Product]
+}
+
+"""
+A List will have a price if it is associated with a Merchant.
+"""
+type List {
+  "A unique identifier for the list."
+  id: ID!
+  "The name of the list."
+  name: String!
+  "List of products within the list."
   products(filterBy: ProductInput): [Product]
 }
 
@@ -141,6 +153,18 @@ input MerchantInput {
 }
 
 """
+Search for product lists by any of these properties.
+"""
+input ListInput {
+  "Match a list by its unique id."
+  id: ID
+  "Match a list by the user id."
+  userId: ID
+  "Match a list by its name."
+  name: StringInput
+}
+
+"""
 This is the main list of all queries.
 """
 type Query {
@@ -150,6 +174,10 @@ type Query {
   categories(filterBy: CategoryInput): [Category]
   "Search for merchants. Use `filterBy` to narrow the results."
   merchants(filterBy: MerchantInput): [Merchant]
+  "Search for users. Use 'filterby' to return user."
+  user(email: String!): User
+  "Search for product lists. Use `filterBy` to narrow the results."
+  list(filterBy: ListInput): List
 }
 
 """
@@ -163,9 +191,82 @@ input UpdateProductPriceInput {
 }
 
 """
+This is the USER profile
+"""
+type User {
+  "The User's unique identifier."
+  id: ID!
+  "The User's full name."
+  name: String!
+  "The User's first name or given name."
+  firstName: String!
+  "The User's last name or surname."
+  lastName: String!
+  "The User's email address."
+  email: String!
+  "The User's password hash."
+  password: String!
+  "The User's mobile phone number."
+  mobileNumber: String!
+}
+
+"""
+Provide these fields to create a new user profile.
+"""
+input CreateUserProfile {
+  userName: String!
+  userEmail: String!
+  userPassword: String!
+  userMobile: String!
+}
+
+"""
+Provide these fields to add an item to a list.
+"""
+input AddProductToList {
+  "The productId corresponds to a unique list."
+  listId: ID!
+  "The product to be added to the list."
+  productId: ID!
+}
+
+input RemoveProductFromList {
+  "The productId corresponds to a unique list."
+  listId: ID!
+  "The product to be added to the list."
+  productId: ID!
+}
+
+input ListInfo {
+  "The listId corresponds to a unique list."
+  listId: ID!
+}
+
+input ListRenameInfo {
+  "The listId corresponds to a unique list."
+  listId: ID!
+  "The name corresponds to what we will rename the list."
+  name: String!
+}
+
+"""
 This is the main list of all mutations.
 """
 type Mutation {
   "This will update the price of a product at a merchant."
   updateProductPrice(input: UpdateProductPriceInput!): Product
+  "This will create a new user profile."
+  createUserProfile(input: CreateUserProfile!): User
+
+  "This will add a product to the list."
+  addToList(input: AddProductToList!): List
+  "This will remove a product from a list."
+  removeFromList(input: RemoveProductFromList!): List
+
+  "This will delete a list."
+  deleteList(input: ListInfo!): Boolean
+    @deprecated(reason: "Not implemented yet")
+  "This will rename a list."
+  renameList(input: ListRenameInfo!): List
+    @deprecated(reason: "Not implemented yet")
 }
