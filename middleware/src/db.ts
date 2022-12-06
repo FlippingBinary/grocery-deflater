@@ -671,14 +671,14 @@ export async function loadSequelize() {
   // Each product list has many product list items
   ProductListModel.hasMany(ProductListItemModel, {
     foreignKey: {
-      name: 'shoppingListId',
+      name: 'productListId',
       field: 'shoppinglist_id',
     },
     as: 'items',
   })
   ProductListItemModel.belongsTo(ProductListModel, {
     foreignKey: {
-      name: 'shoppingListId',
+      name: 'productListId',
       field: 'shoppinglist_id',
     },
     as: 'productList',
