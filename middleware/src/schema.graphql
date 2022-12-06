@@ -185,7 +185,9 @@ Provide these fields to update a product's price.
 """
 input UpdateProductPriceInput {
   "The productId corresponds to a unique product."
-  productId: ID!
+  productId: String!
+  "The merchantId corresponds to a merchants's unique location."
+  merchantId: String!
   "The price is the current shelf price of the product."
   price: Float!
 }

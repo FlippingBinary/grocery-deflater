@@ -249,8 +249,12 @@ export async function productsResolver({
 export async function updateProductPriceMutation(
   args: RequireFields<MutationUpdateProductPriceArgs, 'input'>
 ): Promise<Product> {
-  const { productId, price } = args.input
-  const variant = await VariantModel.findByPk(parseInt(productId), {
+  const { productId, merchantId, price } = args.input
+  const variant = await VariantModel.findOne({
+    where: {
+      productId,
+      locationId: merchantId,
+    },
     include: [
       {
         model: ProductModel,
