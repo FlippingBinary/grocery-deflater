@@ -261,7 +261,7 @@ export async function updateProductPriceMutation(
   }
 
   return {
-    id: variant.id.toString(),
+    id: variant.product.id.toString(),
     name: variant.product.name,
     picture: variant.product.picture,
     price: variant.price,
