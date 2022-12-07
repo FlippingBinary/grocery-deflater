@@ -5,5 +5,5 @@
     "content-type": "application/json"
   },
   "requestContext": {},
-  "body": "{\"query\":\"query User($email: String!) {  user(email: $email) {    name    mobileNumber  }}\",\"variables\":{\"email\":\"jon@gmail.com\"}}"
+  "body": "{\"query\":\"query User($email: String!) {  user(email: $email) {  id  name  mobileNumber  }}\",\"variables\":{\"email\":\"Chong@gmail.com\"}}"
 }
