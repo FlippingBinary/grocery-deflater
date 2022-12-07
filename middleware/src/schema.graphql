@@ -111,7 +111,7 @@ input ProductInput {
   "Match a product by its category name."
   category: StringInput
   "Match a product by its category id."
-  categoryId: Int
+  categoryId: String
 }
 
 """
