@@ -36,50 +36,6 @@ export async function productsResolver({
   list?: List
 }): Promise<Product[]> {
   const filterBy = args.filterBy
-
-  if (list?.products?.length) {
-    // The products are already in this list, so just filter them.
-    // This is a shortcut that prevents additional queries of the database
-    return list.products.filter((product) => {
-      if (
-        !!filterBy.category?.endsWith &&
-        !product.category.name.endsWith(filterBy.category.endsWith)
-      )
-        return false
-      if (
-        !!filterBy.category?.matches &&
-        !product.category.name.match(filterBy.category.matches)
-      )
-        return false
-      if (
-        !!filterBy.category?.startsWith &&
-        !product.category.name.startsWith(filterBy.category.startsWith)
-      )
-        return false
-      if (
-        !!filterBy.categoryId &&
-        parseInt(product.categoryId) !== filterBy.categoryId
-      )
-        return false
-      if (!!filterBy.id && product.id !== filterBy.id) return false
-      if (
-        !!filterBy.name?.endsWith &&
-        !product.name.endsWith(filterBy.name.endsWith)
-      )
-        return false
-      if (
-        !!filterBy.name?.matches &&
-        !product.name.match(filterBy.name.matches)
-      )
-        return false
-      if (
-        !!filterBy.name?.startsWith &&
-        !product.name.startsWith(filterBy.name.startsWith)
-      )
-        return false
-    })
-  }
-
   let productId: number | undefined
   let categoryId: number[] | undefined
   let name: Record<symbol, string> | undefined
@@ -122,12 +78,45 @@ export async function productsResolver({
     }
   }
 
+  if (list !== undefined) {
+    // The parent object is a Merchant type in GraphQL, so we can provide location-specific info like price and weight.
+    const listId = parseInt(list.id)
+    const where: WhereOptions<ProductListItemModel> = { productListId: listId }
+    if (productId !== undefined) where.productId = productId
+    if (name !== undefined) where['$product.Product_name$'] = name
+    if (categoryId !== undefined)
+      where['$product.Category_id$'] = {
+        [Op.in]: categoryId,
+      }
+    const variants = await ProductListItemModel.findAll({
+      where,
+      include: [
+        {
+          model: ProductModel,
+          as: 'product',
+        },
+      ],
+    })
+
+    // We have promised to return an array, according to our GraphQL Schema.
+    if (!variants) return []
+
+    return variants.map(
+      (variant): Product => ({
+        id: variant.id.toString(),
+        name: variant.product.name,
+        picture: variant.product.picture,
+        categoryId: variant.product.categoryId?.toString() ?? 'categoryId',
+      })
+    )
+  }
+
   if (merchant !== undefined) {
     // The parent object is a Merchant type in GraphQL, so we can provide location-specific info like price and weight.
     const locationId = parseInt(merchant.id)
     const where: WhereOptions<VariantModel> = { locationId }
-    if (productId !== undefined) where.productId = productId
-    if (name !== undefined) where['$product.name$'] = name
+    if (productId !== undefined) where.id = productId
+    if (name !== undefined) where['$product.Product_name$'] = name
     if (categoryId !== undefined)
       where['$product.Category_id$'] = {
         [Op.in]: categoryId,
@@ -147,7 +136,7 @@ export async function productsResolver({
 
     return variants.map(
       (variant): Product => ({
-        id: variant.id.toString(),
+        id: variant.product.id.toString(),
         name: variant.product.name,
         picture: variant.product.picture,
         price: variant.price,
@@ -249,8 +238,12 @@ export async function productsResolver({
 export async function updateProductPriceMutation(
   args: RequireFields<MutationUpdateProductPriceArgs, 'input'>
 ): Promise<Product> {
-  const { productId, price } = args.input
-  const variant = await VariantModel.findByPk(parseInt(productId), {
+  const { productId, merchantId, price } = args.input
+  const variant = await VariantModel.findOne({
+    where: {
+      productId,
+      locationId: merchantId,
+    },
     include: [
       {
         model: ProductModel,
@@ -268,7 +261,7 @@ export async function updateProductPriceMutation(
   }
 
   return {
-    id: variant.id.toString(),
+    id: variant.product.id.toString(),
     name: variant.product.name,
     picture: variant.product.picture,
     price: variant.price,

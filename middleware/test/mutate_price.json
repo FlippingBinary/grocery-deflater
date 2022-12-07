@@ -5,5 +5,5 @@
     "content-type": "application/json"
   },
   "requestContext": {},
-  "body": "{\"query\":\"mutation Mutation($input: UpdateProductPriceInput!) {  updateProductPrice(input: $input) {    name    price    category {      name    }  }}\",\"variables\":{\"input\":{\"productId\":\"1\",\"price\":5.98}}}"
+  "body": "{\"query\":\"mutation Mutation($input: UpdateProductPriceInput!) {  updateProductPrice(input: $input) {    name    price    category {      name    }  }}\",\"variables\":{\"input\":{\"productId\":\"1\",\"merchantId\":\"1\",\"price\":5.98}}}"
 }

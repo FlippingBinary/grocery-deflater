@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql'
-import { ProductListModel } from './db'
+import { ProductModel, ProductListModel } from './db'
 import {
   List,
   MutationAddToListArgs,
@@ -31,7 +31,7 @@ export async function listResolver({
   if (userId !== undefined) {
     const list = await ProductListModel.findOne({
       where: {
-        ownerId: parseInt(userId),
+        ownerId: userId,
       },
     })
     if (!list) return null

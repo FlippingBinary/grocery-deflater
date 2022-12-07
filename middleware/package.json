@@ -6,6 +6,7 @@
     "test:p": "serverless invoke local -f graphql -p test/products.json",
     "test:pic": "serverless invoke local -f graphql -p test/products_in_categories.json",
     "test:pim": "serverless invoke local -f graphql -p test/products_in_merchant.json",
+    "test:pil": "serverless invoke local -f graphql -p test/products_in_list.json",
     "test:u": "serverless invoke local -f graphql -p test/user.json",
     "test:mp": "serverless invoke local -f graphql -p test/mutate_price.json",
     "codegen": "graphql-codegen --config codegen.ts",

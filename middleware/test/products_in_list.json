@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "path": "/",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "requestContext": {},
+  "body": "{\"query\":\"query List($filterBy: ListInput) {  list(filterBy: $filterBy) {    products {      name    }  }}\",\"variables\":{\"filterBy\":{\"userId\":\"Chong\"}}}"
+}
