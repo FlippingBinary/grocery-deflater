@@ -115,7 +115,7 @@ export async function productsResolver({
     // The parent object is a Merchant type in GraphQL, so we can provide location-specific info like price and weight.
     const locationId = parseInt(merchant.id)
     const where: WhereOptions<VariantModel> = { locationId }
-    if (productId !== undefined) where.productId = productId
+    if (productId !== undefined) where.id = productId
     if (name !== undefined) where['$product.Product_name$'] = name
     if (categoryId !== undefined)
       where['$product.Category_id$'] = {
@@ -136,7 +136,7 @@ export async function productsResolver({
 
     return variants.map(
       (variant): Product => ({
-        id: variant.id.toString(),
+        id: variant.product.id.toString(),
         name: variant.product.name,
         picture: variant.product.picture,
         price: variant.price,
