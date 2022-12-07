@@ -51,21 +51,3 @@ export async function categoriesResolver({
     })
   )
 }
-
-export async function categoryResolver({
-  product,
-}: {
-  product: Product
-}): Promise<Category> {
-  const category = await CategoryModel.findByPk(parseInt(product.categoryId))
-
-  if (!category) {
-    return null
-  }
-
-  return {
-    id: category.id.toString(),
-    name: category.name,
-    description: category.description,
-  }
-}

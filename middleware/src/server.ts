@@ -2,13 +2,12 @@ import { readFileSync } from 'fs'
 import { ApolloServer } from '@apollo/server'
 import { startServerAndCreateLambdaHandler } from '@as-integrations/aws-lambda' //highlight-line
 import { productsResolver, updateProductPriceMutation } from './products'
-import { merchantResolver, merchantsResolver } from './merchants'
+import { merchantsResolver } from './merchants'
 import { Resolvers } from './generated/graphql'
 import { loadSequelize } from './db'
 import { GraphQLScalarType, Kind } from 'graphql'
-import { locationResolver } from './locations'
 import { Sequelize } from 'sequelize'
-import { categoriesResolver, categoryResolver } from './categories'
+import { categoriesResolver } from './categories'
 import { listResolver, addToListMutation } from './list'
 import { userResolver } from './user'
 
@@ -52,11 +51,12 @@ const resolvers: Resolvers = {
   Merchant: {
     products: async (merchant, args) =>
       await productsResolver({ args, merchant }),
-    location: async (merchant) => await locationResolver({ merchant }),
   },
   Product: {
-    category: async (product) => await categoryResolver({ product }),
-    merchant: async (product) => await merchantResolver({ product }),
+    category: async (product) =>
+      (await categoriesResolver({ product, args: {} }))[0],
+    merchant: async (product) =>
+      (await merchantsResolver({ product, args: {} }))[0],
     merchants: async (product, args) =>
       await merchantsResolver({ product, args }),
   },
