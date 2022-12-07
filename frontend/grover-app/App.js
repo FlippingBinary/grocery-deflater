@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { useState,useEffect} from 'react';
-import { StyleSheet, Text, TextInput, View, Image, Pressable, FlatList, TouchableOpacity, Modal,ScrollView, SafeAreaView, Keyboard, ActivityIndicator } from 'react-native';
-import { NavigationContainer, useRoute } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, View, Image, ImageBackground, Pressable, FlatList, TouchableOpacity, Modal, ScrollView, SafeAreaView, Keyboard, ActivityIndicator } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SearchBar, Card, FAB, Icon } from '@rneui/themed';
+import { SearchBar, Card, FAB, Icon, Badge } from '@rneui/themed';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { request, gql } from 'graphql-request';
 
@@ -23,6 +23,30 @@ const GET_DAIRY_PRODUCTS = gql`
 query GetDairyProducts {
   merchants {
     products(filterBy: { category: { matches: "Dairy" } }) {
+      name
+      picture
+      price
+      weight
+      id
+      merchant {
+        id
+        location {
+          address
+          city
+          state
+          zip
+        }
+        name
+      }
+    }
+  }
+}
+`;
+
+const GET_MILK_PRODUCTS = gql`
+query GetMilkProducts {
+  merchants {
+    products(filterBy: { name: { matches: "Milk" } }) {
       name
       picture
       price
@@ -113,17 +137,18 @@ export function Item(props) {
   const { item, onPress } = props;
   const [modalVisible, setModalVisible] = useState(false);
   const [priceUpdateText, setPriceUpdateText] = useState('');
+
   let productPicture = item.picture;
   let updatedPrice;
+
   return (
-    <TouchableOpacity onPress={onPress} style={styles.item}>
+      <TouchableOpacity onPress={onPress} style={styles.item}>
       <View style={styles.centeredView}>
       <Modal
         animationType="slide"
         transparent={false}
         visible={modalVisible}
         onRequestClose={() => {
-          //Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
@@ -192,7 +217,7 @@ export function Item(props) {
               keyboardType='numeric'
               defaultValue={'' + item.price + ''}
               onChangeText={(text) => { updatedPrice = text; setPriceUpdateText(updatedPrice); }}
-              onSubmitEditing={() => { /*TODO: Validation */ if(Number.isNaN(priceUpdateText)) { alert('You have entered an invalid number; please enter a valid number and try again'); }  }}
+              onSubmitEditing={() => { if(Number.isNaN(priceUpdateText)) { Alert.alert('You have entered an invalid number; please enter a valid number and try again'); }  }}
             />
             <ActionButton
               title="UPDATE"
@@ -201,10 +226,14 @@ export function Item(props) {
                 const VARIABLES =
                 {
                   "updateProductPriceInput": {
+                    "merchantId": '' + item.merchant.id + '',
                     "price": NEW_PRICE,
                     "productId": '' + item.id + ''
                   }
                 };
+                console.log(item.merchant.id);
+                console.log(NEW_PRICE);
+                console.log(item.id);
                 request(AWS_GRAPHQL_ENDPOINT, UPDATE_PRODUCT_PRICE, VARIABLES)
                 .then((data) => {
                   console.log(data);
@@ -250,30 +279,25 @@ export function Item(props) {
       }}>{item.merchant.name + '\n'  + item.merchant.location.city + ', '+ item.merchant.location.state + ' ' + item.merchant.location.zip}</Text>
       <ActionButtonProducts
           title="Add to List"
-          onPress={() => navigation.navigate("Details")}
+          onPress={() => {
+          }}
         />
     </TouchableOpacity>
   );
 }
-
-
 
 export function ProductItem(props) {
   const { productData } = props
   const [selectedId, setSelectedId] = useState(null);
   
   const renderItem = ({ item }) => {
-    //const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
-    //const color = item.id === selectedId ? 'white' : 'black';
     console.log(item);
       return (
         <Item
           item={item}
           onPress={() => { 
-            setSelectedId(item.id);
+            //setSelectedId(item.id);
           }}
-          //backgroundColor={{ backgroundColor }}
-          //textColor={{ color }}
         />
       );
   };
@@ -283,7 +307,8 @@ export function ProductItem(props) {
       <FlatList
         data={productData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        //keyExtractor={(item) => item.id}
+        keyExtractor={() => Math.random()}
         extraData={selectedId}
         numColumns='2'
       />
@@ -336,15 +361,6 @@ export function DealsButton(props) {
   );
 }
 
-const AccountSignUpScreen = () => {
-  return (
-    <View style={styles.container}>
-      <Text>Account Sign Up Screen</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-};
-
 const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
@@ -378,7 +394,7 @@ const LoginScreen = ({navigation}) => {
       </Text>
       <ActionButton
           title="SIGN IN"
-          onPress={() => navigation.navigate("Details")}
+          onPress={() => navigation.navigate("Welcome")}
         />
         <Text 
           style={[styles.textLinkStrong, {
@@ -394,7 +410,7 @@ const LoginScreen = ({navigation}) => {
   );
 };
 
-const ProductsScreen = ({route, navigation}) => {
+const ProductsScreen = ({route}) => {
   const { productData } = route.params;
   return (
     <View style={styles.container}>
@@ -411,7 +427,6 @@ const HomeScreen = ({navigation}) => {
       <Image
           style={{ 
             position: 'relative',
-            //top: 10,
             marginBottom: 15,
             maxWidth: 250,
             maxHeight: 50
@@ -429,17 +444,30 @@ const HomeScreen = ({navigation}) => {
           placeholder="Search for grocery deals"
           lightTheme
           round
-          //value={this.state.searchValue}
-          //onChangeText={(text) => this.searchFunction(text)}
-        /* BC (11/20/2022): FOR ANTHONY: Use this event handler to submit the query to the API
-         * The API sandbox is located here: https://z9zcba24b7.execute-api.us-east-1.amazonaws.com/
-         * The documentation for the Searchbar is here: https://reactnativeelements.com/docs/components/searchbar 
-         * The documentation for the onSubmitEditing property is here: https://reactnative.dev/docs/textinput#onsubmitediting */
-          // onSubmitEditing={({text}) => send query to API } 
+          onSubmitEditing={() => request(AWS_GRAPHQL_ENDPOINT, GET_MILK_PRODUCTS).then((data) => { 
+            // Transpose returned object to new object
+            // Step #1: Create new object
+            let milkProducts = [];
+            // Step #2: Iterate through returned object to push each object in non-empty array into new object
+            data.merchants.forEach((groupOfProducts) => {
+              if (groupOfProducts.products.length > 0) {
+                groupOfProducts.products.forEach((product) => {
+                  milkProducts.push(product);
+                })
+              }                  
+            })
+            console.log(milkProducts);
+            // Step #3: Assign new object to productData parameter
+            navigation.navigate({
+              name: "Products", params: {
+                productData: milkProducts
+              }
+            })})}
         />
       <Image
           style={{ 
             position: 'relative',
+            height: 270,
             width: '100%'
           }}
           source={ require('./assets/dsp/assets/images/home-screen-map.png')}
@@ -611,84 +639,6 @@ const RecipesScreen = ({navigation}) => {
       <StatusBar style="auto" />
     </View>
   );
-  // IGNORE - Was figuring out the search functionality
-
-  // const [filteredData,setFilteredData] = useState([]);
-  // const [masterData,setmasterData] = useState([]);
-  // const [search,setsearch] = useState('');
-  
-  // useEffect(() => {
-  //   fetchPosts();
-  //   return () =>{
-
-  //   }
-  // },[])
-  
-  // const fetchPosts = () => {
-
-  //   const apiURL = 'https://jsonplaceholder.typicode.com/posts';
-  //   fetch(apiURL)
-  //   .then((response) => response.json())
-  //   .then((responseJson) => {
-  //     setFilteredData(responseJson);
-  //     setmasterData(responseJson);
-  //   }).catch((erorr) => {
-  //     console.error(error);
-  //   })
-  // }
-
-  // const searchFilter = (text) => {
-  //   if (text) {
-  //     const newData = masterData.filter((item) => {
-  //       const itemData = item.title ? 
-  //                        item.title.toUpperCase()
-  //                        : ''.toUpperCase();
-  //       const textData = text.toUpperCase();
-  //       return itemData.indexOf(textData) > -1;
-  //     });
-
-  //     setFilteredData(newData);
-  //     setsearch(text);
-  //   } else {
-  //     setFilteredData(masterData);
-  //     setsearch(text);
-  //   }
-  // }
-  
-  // const ItemView = ({item}) => {
-  //   return (
-  //     <Text style = {styles.headerText}>
-  //       {item.id}{' .'}{item.title.toUpperCase()}
-  //     </Text>
-  //  )
-  // }
-  // const ItemSeparatorView = () => {
-  //   return (
-  //     <View
-  //   style={{height:0.5,width:'100%',backgroundColor:'white'}}
-  //     />
-  //   )
-  // } 
-  // return (
-
-  //   <SafeAreaView style={styles.container2}>
-  //     <TextInput
-  //       style={styles.textInputStyle}
-  //       value= {search}
-  //       placeholder="Search Here"
-  //       underlineColorAndroid="transparent"
-  //       onChangeText={(text) => searchFilter(text)}
-
-  //     />
-  //     <FlatList
-  //       data={filteredData}
-  //       keyExtractor={(item,index) => index.toString()}
-  //       ItemSeparatorComponent = {ItemSeparatorView}
-  //       renderItem={ItemView}
-  //     />
-  //     <StatusBar style="auto" />
-  //   </SafeAreaView>
-  // );
 };
 
 const RecipeDetails = ({route}) => {
@@ -702,7 +652,6 @@ const RecipeDetails = ({route}) => {
           <Text style ={{fontSize:22,color:'#008080',fontWeight:'800'}}>
             Ingredients:
           </Text>
-          {/* <Text style ={styles.ingredients}></Text> */}
           <Text style ={styles.ingredients}>{`${recipe.ingredients.map((item) => item['food'] ) } `}</Text>
 
         </View>
@@ -764,7 +713,14 @@ const RecipeDetails = ({route}) => {
 const ComparePricesScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Compare Prices Screen</Text>
+      <Image
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+          resizeMode="contain"
+          source={ require('./assets/dsp/assets/images/compare-prices.png')}
+        />
       <StatusBar style="auto" />
     </View>
   );
@@ -772,8 +728,14 @@ const ComparePricesScreen = () => {
 
 const ShoppingListScreen = () => {
   return (
-    <View style={styles.container}>
-      <Text>Shopping List Screen</Text>
+      <View style={styles.container}>
+        <Image
+          style={{
+            width: '100%'
+          }}
+          resizeMode="contain"
+          source={ require('./assets/dsp/assets/images/shopping-list2.png')}
+        />
       <StatusBar style="auto" />
     </View>
   );
@@ -792,9 +754,32 @@ const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
-const DetailsScreen = () => {
+const ScreenStack = () => {
   return (
-    <Tab.Navigator
+    <Stack.Navigator
+        initialRouteName='Welcome'
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: 'white'
+          },
+          headerTintColor: 'black',
+          headerTitleStyle: {
+            fontWeight: 'bold'
+          }
+      }}>
+      <Stack.Screen name="Welcome" component={HomeScreen}/>
+      <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+      <Stack.Screen name="Products" component={ProductsScreen}/>
+      <Stack.Screen name="Recipes" component={RecipesScreen}/>
+      <Stack.Screen name="RDetails" component={RecipeDetails}/>
+    </Stack.Navigator>
+  )
+}
+
+const App = () => {
+  return (
+      <NavigationContainer>
+        <Tab.Navigator
     screenOptions={{
       tabBarLabelPosition: "below-icon"
     }}>
@@ -816,7 +801,7 @@ const DetailsScreen = () => {
               />
             )
           }}
-          component={HomeScreen} />
+          component={ScreenStack} />
         <Tab.Screen 
           name="Recipes" 
           options={{
@@ -862,7 +847,7 @@ const DetailsScreen = () => {
             tabBarAccessibilityLabel: "Shopping List Screen",
             headerShown: false,
             tabBarIcon: () => (
-              <Image
+              <ImageBackground
                 style={{
                   position: 'relative',
                   maxHeight: 20, 
@@ -870,7 +855,23 @@ const DetailsScreen = () => {
                 }}
                 resizeMode="contain"
                 source={ require('./assets/dsp/assets/images/menu-bottom-shopping-cart-icon.png')}
-              />
+              >
+                <Badge
+                  value={5}
+                  containerStyle={{
+                    position: 'relative',
+                    top: 10,
+                    left: 10
+                  }}
+                  badgeStyle={{
+                    backgroundColor: '#25BEE8'
+                  }}
+                  textStyle={{
+                    color: '#fff'
+                  }}
+                />
+              </ImageBackground>
+              
             )
           }} 
           component={ShoppingListScreen} />
@@ -893,31 +894,8 @@ const DetailsScreen = () => {
           )
         }} 
         component={SettingsScreen} />
-      </Tab.Navigator>    
-  );
-};
-
-const App = () => {
-  return (
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName='Login'
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: 'white'
-            },
-            headerTintColor: 'black',
-            headerTitleStyle: {
-              fontWeight: 'bold'
-            }
-        }}>
-          <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-          <Stack.Screen name="Products" component={ProductsScreen}/>    
-          <Stack.Screen name="Details" component={DetailsScreen}/>
-          <Stack.Screen name="RDetails" component={RecipeDetails}/>
-          {/*<Stack.Screen name="AccountSignUp" component={AccountSignUpScreen}/>*/}
-        </Stack.Navigator>
-      </NavigationContainer>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
