@@ -1,11 +1,8 @@
+import { GraphQLError } from 'graphql'
 import { Op } from 'sequelize'
-import { LocationModel, MerchantModel, ProductModel, VariantModel } from './db'
-import {
-  Merchant,
-  Product,
-  ProductMerchantsArgs,
-  QueryMerchantsArgs,
-} from './generated/graphql'
+import { LocationModel, MerchantModel, VariantModel } from './db'
+import { Merchant, Product, QueryMerchantsArgs } from './generated/graphql'
+import { encodeId, decodeId } from './utils'
 
 export async function merchantsResolver({
   args,
@@ -14,10 +11,13 @@ export async function merchantsResolver({
   args: Partial<QueryMerchantsArgs>
   product?: Product
 }): Promise<Merchant[]> {
-  console.log('Starting merchantsResolver')
   const filterBy = args.filterBy
   if (!!filterBy?.id) {
-    const location = await LocationModel.findByPk(filterBy.id, {
+    const recordId = decodeId(filterBy.id)
+    if (recordId.scope !== 'location' || recordId.id === undefined) {
+      throw new GraphQLError('id in filterBy is invalid')
+    }
+    const location = await LocationModel.findByPk(recordId.id, {
       include: [
         {
           model: MerchantModel,
@@ -29,7 +29,7 @@ export async function merchantsResolver({
     if (!location) return null
     return [
       {
-        id: location.id.toString(),
+        id: encodeId({ scope: 'location', id: location.id }),
         name: location.merchant.name,
         location: {
           address: `${location.streetNumber} ${location.streetName}`,
@@ -73,7 +73,7 @@ export async function merchantsResolver({
     return merchants
       .map((merchant) =>
         merchant.locations.map((location) => ({
-          id: location.id.toString(),
+          id: encodeId({ scope: 'location', id: location.id }),
           name: merchant.name,
           location: {
             address: `${location.streetNumber} ${location.streetName}`,
@@ -161,7 +161,7 @@ export async function merchantsResolver({
     return merchants
       .map((merchant) =>
         merchant.locations.map((location) => ({
-          id: location.id.toString(),
+          id: encodeId({ scope: 'location', id: location.id }),
           name: merchant.name,
           location: {
             address: `${location.streetNumber} ${location.streetName}`,
@@ -174,52 +174,86 @@ export async function merchantsResolver({
       .flat()
   } else if (!!product) {
     // This is a query for the merchants that sell a particular product.
-    const variant = await VariantModel.findByPk(product.id, {
-      include: [
-        {
-          model: ProductModel,
-          attributes: ['id'],
-          as: 'product',
+    const productRecordId = decodeId(product.id)
+    if (productRecordId.scope === 'product') {
+      // The parent product is generic. Return all merchants that sell it.
+      const locations = await VariantModel.findAll({
+        where: {
+          productId: productRecordId.id,
         },
-      ],
-    })
-    if (!variant) return null
-    const locations = await VariantModel.findAll({
-      where: {
-        productId: variant.product.id,
-      },
-      include: [
-        {
-          model: LocationModel,
-          attributes: [
-            'id',
-            'streetNumber',
-            'streetName',
-            'city',
-            'state',
-            'zip',
-          ],
-          as: 'location',
-          include: [
-            {
-              model: MerchantModel,
-              attributes: ['name'],
-              as: 'merchant',
-            },
-          ],
+        include: [
+          {
+            model: LocationModel,
+            attributes: [
+              'id',
+              'streetNumber',
+              'streetName',
+              'city',
+              'state',
+              'zip',
+            ],
+            as: 'location',
+            include: [
+              {
+                model: MerchantModel,
+                attributes: ['name'],
+                as: 'merchant',
+              },
+            ],
+          },
+        ],
+      })
+      return locations.map((variant) => ({
+        id: encodeId({ scope: 'location', id: variant.location.id }),
+        name: variant.location.merchant.name,
+        location: {
+          address: `${variant.location.streetNumber} ${variant.location.streetName}`,
+          city: variant.location.city,
+          state: variant.location.state,
+          zip: variant.location.zip.toString(),
         },
-      ],
-    })
-    return locations.map((variant) => ({
-      id: variant.location.id.toString(),
-      name: variant.location.merchant.name,
-      location: {
-        address: `${variant.location.streetNumber} ${variant.location.streetName}`,
-        city: variant.location.city,
-        state: variant.location.state,
-        zip: variant.location.zip.toString(),
-      },
-    }))
+      }))
+    } else if (productRecordId.scope === 'variant') {
+      // The parent product is specific. Restrict locations to one.
+      const variant = await VariantModel.findByPk(productRecordId.id, {
+        include: [
+          {
+            model: LocationModel,
+            attributes: [
+              'id',
+              'streetNumber',
+              'streetName',
+              'city',
+              'state',
+              'zip',
+            ],
+            as: 'location',
+            include: [
+              {
+                model: MerchantModel,
+                attributes: ['name'],
+                as: 'merchant',
+              },
+            ],
+          },
+        ],
+      })
+      return [
+        {
+          id: encodeId({ scope: 'location', id: variant.location.id }),
+          name: variant.location.merchant.name,
+          location: {
+            address: `${variant.location.streetNumber} ${variant.location.streetName}`,
+            city: variant.location.city,
+            state: variant.location.state,
+            zip: variant.location.zip.toString(),
+          },
+        },
+      ]
+    }
+    throw new GraphQLError(
+      `The merchant's parent product id was encoded with an invalid scope ${productRecordId.scope}`
+    )
   } else {
     const merchants = await MerchantModel.findAll({
       include: [
@@ -241,7 +275,7 @@ export async function merchantsResolver({
     return merchants
       .map((merchant) =>
         merchant.locations.map((location) => ({
-          id: location.id.toString(),
+          id: encodeId({ scope: 'location', id: location.id }),
           name: merchant.name,
           location: {
             address: `${location.streetNumber} ${location.streetName}`,
@@ -254,4 +288,3 @@ export async function merchantsResolver({
       .flat()
   }
 }
-

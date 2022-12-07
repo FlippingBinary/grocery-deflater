@@ -201,7 +201,7 @@ export class UserModel extends Model<
   InferAttributes<UserModel>,
   InferCreationAttributes<UserModel>
 > {
-  declare id: CreationOptional<number>
+  declare id: CreationOptional<string>
   declare email: string
   declare password: string
   declare firstName: string
@@ -499,7 +499,7 @@ export async function loadSequelize() {
   UserModel.init(
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         primaryKey: true,
         field: 'user_id',
       },

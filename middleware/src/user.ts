@@ -10,7 +10,7 @@ export async function userResolver({
   if (!user) return null
 
   return {
-    id: user.id.toString(),
+    id: user.id,
     name: `${user.firstName} ${user.lastName}`,
     firstName: user.firstName,
     lastName: user.lastName,

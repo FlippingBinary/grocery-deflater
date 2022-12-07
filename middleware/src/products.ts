@@ -16,6 +16,7 @@ import {
   QueryProductsArgs,
   RequireFields,
 } from './generated/graphql'
+import { decodeId, encodeId } from './utils'
 
 /**
  * The products resolver returns an array of GraphQL Product objects belonging to the parent object, if provided.
@@ -42,7 +43,14 @@ export async function productsResolver({
 
   // The filterBy options need to be collected in a way that is useful to the database queries.
   if (filterBy?.id !== undefined) {
-    productId = parseInt(filterBy.id)
+    const productRecordId = decodeId(filterBy.id)
+    if (productRecordId === null)
+      throw new GraphQLError('id in filterBy query is invalid')
+    if (productRecordId.scope !== 'product')
+      throw new GraphQLError(
+        `id in filterBy query uses invalid scope ${productRecordId.scope}`
+      )
+    productId = productRecordId.id
   }
   if (filterBy?.name?.startsWith !== undefined) {
     name = name ?? {}
@@ -57,7 +65,14 @@ export async function productsResolver({
     name[Op.eq] = filterBy.name.matches
   }
   if (filterBy?.categoryId !== undefined) {
-    categoryId = [filterBy.categoryId]
+    const categoryRecordId = decodeId(filterBy.categoryId.toString())
+    if (categoryRecordId === null)
+      throw new GraphQLError('categoryId in filterBy is invalid')
+    if (categoryRecordId.scope !== 'category')
+      throw new GraphQLError(
+        `categoryId in filterBy uses invalid scope ${categoryRecordId.scope}`
+      )
+    categoryId = [categoryRecordId.id]
   } else if (filterBy?.category !== undefined) {
     const categorySearch: FindOptions<CategoryModel> = {}
     if (filterBy.category.startsWith !== undefined) {
@@ -80,7 +95,12 @@ export async function productsResolver({
 
   if (list !== undefined) {
     // The parent object is a Merchant type in GraphQL, so we can provide location-specific info like price and weight.
-    const listId = parseInt(list.id)
+    const listRecordId = decodeId(list.id)
+    if (listRecordId?.scope !== 'list')
+      throw new GraphQLError(
+        `id of parent list uses invalid scope ${listRecordId.scope}, which should be impossible.`
+      )
+    const listId = listRecordId.id
     const where: WhereOptions<ProductListItemModel> = { productListId: listId }
     if (productId !== undefined) where.productId = productId
     if (name !== undefined) where['$product.Product_name$'] = name
@@ -106,14 +126,22 @@ export async function productsResolver({
         id: variant.id.toString(),
         name: variant.product.name,
         picture: variant.product.picture,
-        categoryId: variant.product.categoryId?.toString() ?? 'categoryId',
+        categoryId: encodeId({
+          scope: 'category',
+          id: variant.product.categoryId,
+        }),
       })
     )
   }
 
   if (merchant !== undefined) {
     // The parent object is a Merchant type in GraphQL, so we can provide location-specific info like price and weight.
-    const locationId = parseInt(merchant.id)
+    const locationRecordId = decodeId(merchant.id)
+    if (locationRecordId?.scope !== 'location')
+      throw new GraphQLError(
+        `id of parent merchant uses invalid scope ${locationRecordId.scope}, which should be impossible.`
+      )
+    const locationId = locationRecordId.id
     const where: WhereOptions<VariantModel> = { locationId }
     if (productId !== undefined) where.id = productId
     if (name !== undefined) where['$product.Product_name$'] = name
@@ -136,20 +164,28 @@ export async function productsResolver({
 
     return variants.map(
       (variant): Product => ({
-        id: variant.product.id.toString(),
+        id: encodeId({ scope: 'variant', id: variant.id }),
         name: variant.product.name,
         picture: variant.product.picture,
         price: variant.price,
         weight: variant.weight,
-        categoryId: variant.product.categoryId?.toString() ?? 'categoryId',
-        merchantId: variant.locationId?.toString() ?? 'merchantId',
+        categoryId: encodeId({
+          scope: 'category',
+          id: variant.product.categoryId,
+        }),
+        merchantId: encodeId({ scope: 'location', id: variant.locationId }),
       })
     )
   }
 
   if (category !== undefined) {
     // The parent type in GraphQL is a category, so we have to limit our search to that category even if the filterBy gives a wider range.
-    const thisCategoryId = parseInt(category.id)
+    const categoryRecordId = decodeId(category.id)
+    if (categoryRecordId?.scope !== 'category')
+      throw new GraphQLError(
+        `id of parent category uses invalid scope ${categoryRecordId.scope}, which should be impossible.`
+      )
+    const thisCategoryId = categoryRecordId.id
     const where: WhereOptions<ProductModel> = {}
     if (productId !== undefined) where.id = productId
     if (name !== undefined) where.name = name
@@ -167,10 +203,10 @@ export async function productsResolver({
 
     return products.map(
       (product): Product => ({
-        id: product.id.toString(),
+        id: encodeId({ scope: 'product', id: product.id }),
         name: product.name,
         picture: product.picture,
-        categoryId: product.categoryId.toString(),
+        categoryId: encodeId({ scope: 'category', id: product.categoryId }),
       })
     )
   }
@@ -178,7 +214,12 @@ export async function productsResolver({
   if (list !== undefined) {
     // list refers to a unique ProductListModel, which has many ProductListItemModels, which each have one ProductModel.
     // It's a complicated relationship, but we have to get that third level of search
-    const listId = parseInt(list.id)
+    const listRecordId = decodeId(list.id)
+    if (listRecordId?.scope !== 'list')
+      throw new GraphQLError(
+        `id of parent list uses invalid scope ${listRecordId.scope}, which should be impossible.`
+      )
+    const listId = listRecordId.id
     const productList = await ProductListModel.findByPk(listId, {
       include: [
         {
@@ -208,10 +249,10 @@ export async function productsResolver({
     if (!productList) return []
 
     return productList.items.map((item) => ({
-      id: item.productId.toString(),
+      id: encodeId({ scope: 'product', id: item.productId }),
       name: item.product.name,
       picture: item.product.picture,
-      categoryId: item.product.categoryId.toString(),
+      categoryId: encodeId({ scope: 'category', id: item.product.categoryId }),
     }))
   }
 
@@ -227,10 +268,10 @@ export async function productsResolver({
 
   return products.map(
     (product): Product => ({
-      id: product.id.toString(),
+      id: encodeId({ scope: 'product', id: product.id }),
       name: product.name,
       picture: product.picture,
-      categoryId: product.categoryId.toString(),
+      categoryId: encodeId({ scope: 'category', id: product.categoryId }),
     })
   )
 }
@@ -238,35 +279,82 @@ export async function productsResolver({
 export async function updateProductPriceMutation(
   args: RequireFields<MutationUpdateProductPriceArgs, 'input'>
 ): Promise<Product> {
-  const { productId, merchantId, price } = args.input
-  const variant = await VariantModel.findOne({
-    where: {
-      productId,
-      locationId: merchantId,
-    },
-    include: [
-      {
-        model: ProductModel,
-        as: 'product',
+  const {
+    productId: rawProductId,
+    merchantId: rawMerchantId,
+    price,
+  } = args.input
+  const productRecordId = decodeId(rawProductId)
+  if (productRecordId === null) throw new GraphQLError('productId is invalid')
+  if (productRecordId.scope === 'product') {
+    const locationRecordId = decodeId(rawMerchantId)
+    if (locationRecordId?.scope !== 'location')
+      throw new GraphQLError('merchantId is invalid')
+    const variant = await VariantModel.findOne({
+      where: {
+        productId: productRecordId.id,
+        locationId: locationRecordId.id,
       },
-    ],
-  })
-  if (!variant) return null
+      include: [
+        {
+          model: ProductModel,
+          as: 'product',
+        },
+      ],
+    })
+    if (!variant) return null
 
-  variant.price = price
-  try {
-    await variant.save()
-  } catch (e) {
-    throw new GraphQLError(e)
-  }
+    variant.price = price
+    try {
+      await variant.save()
+    } catch (e) {
+      throw new GraphQLError('Failed to update product price in database')
+    }
 
-  return {
-    id: variant.product.id.toString(),
-    name: variant.product.name,
-    picture: variant.product.picture,
-    price: variant.price,
-    weight: variant.weight,
-    categoryId: variant.product.categoryId.toString(),
-    merchantId: variant.locationId.toString(),
+    return {
+      id: encodeId({ scope: 'variant', id: variant.id }),
+      name: variant.product.name,
+      picture: variant.product.picture,
+      price: variant.price,
+      weight: variant.weight,
+      categoryId: encodeId({
+        scope: 'category',
+        id: variant.product.categoryId,
+      }),
+      merchantId: encodeId({ scope: 'location', id: variant.locationId }),
+    }
+  } else if (productRecordId.scope === 'variant') {
+    const variant = await VariantModel.findByPk(productRecordId.id, {
+      include: [
+        {
+          model: ProductModel,
+          as: 'product',
+        },
+      ],
+    })
+    if (!variant) return null
+
+    variant.price = price
+    try {
+      await variant.save()
+    } catch (e) {
+      throw new GraphQLError('Failed to update product price in database')
+    }
+
+    return {
+      id: encodeId({ scope: 'variant', id: variant.id }),
+      name: variant.product.name,
+      picture: variant.product.picture,
+      price: variant.price,
+      weight: variant.weight,
+      categoryId: encodeId({
+        scope: 'category',
+        id: variant.product.categoryId,
+      }),
+      merchantId: encodeId({ scope: 'location', id: variant.locationId }),
+    }
   }
+  throw new GraphQLError(
+    `productId used invalid scope ${productRecordId.scope}`
+  )
 }
