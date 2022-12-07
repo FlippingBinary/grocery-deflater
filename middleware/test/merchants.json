@@ -1,0 +1,9 @@
+{
+  "httpMethod": "POST",
+  "path": "/",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "requestContext": {},
+  "body": "{\"query\":\"query Merchants {  merchants {    location {      address      city      state      zip      latitude      longitude    }    name    id  }}\"}"
+}
